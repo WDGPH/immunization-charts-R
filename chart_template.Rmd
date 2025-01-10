@@ -77,7 +77,7 @@ params:
   % Footer content
   \fancyfoot[C]{
   \centering
-  Page \thepage\ of \pageref{LastPage\theletter}
+  Page \thepage\ sur \pageref{LastPage\theletter}
   }
 }
 
@@ -112,7 +112,7 @@ for (j in seq_len(nrow(params$client_data))) {
 \\newdocument
 
 \\begin{center}
-{\\color{darkred}\\Large \\textbf{Bring this notice to your family doctor or healthcare provider}}
+{\\color{darkred}\\large \\textbf{Apportez cet avis à votre médecin de famille ou à votre fournisseur de soins de santé}}
 \\end{center}
 
 \\vspace{0.5cm}
@@ -122,7 +122,7 @@ for (j in seq_len(nrow(params$client_data))) {
 \\end{minipage}
 \\hfill
 \\begin{minipage}[c]{0.60\\textwidth}
-  \\raggedleft \\huge \\textbf{Immunization Notice}
+  \\raggedleft \\huge \\textbf{Avis d’immunisation}
 \\end{minipage}
 
 \\vspace{0.25cm}
@@ -132,9 +132,9 @@ for (j in seq_len(nrow(params$client_data))) {
 \\setlength{\\tabcolsep}{10pt}
 \\begin{table}[h!]
     \\begin{tabularx}{\\textwidth}{|X|X|}
-    \\hline ",
-      if(client$`Age 16+`) {"To:"} else {"To the parent/guardian of:"},
-        "\\newline\\redact{\\textbf{", client$Name, "}}
+    \\hline
+        Élève:
+        \\newline\\redact{\\textbf{", client$Name, "}}
         \\newline\\newline
         \\begin{minipage}[t]{\\linewidth}\\raggedright
             \\textbf{\\redact{", if(!is.na(client$`Street Address`)) {paste0(client$`Street Address`, collapse = "")}, "}",
@@ -142,9 +142,9 @@ for (j in seq_len(nrow(params$client_data))) {
             if(!is.na(client$`Postal Code`)) {paste0(" ", client$`Postal Code`, collapse = "")},
         "}\\end{minipage}\\newline
     &
-        Client ID: \\textbf{", client$`Client ID`, "}\\newline\\newline
-        Date of Birth: \\redact{\\textbf{", client$`Date of Birth`, "}}\\newline\\newline
-        School: \\begin{minipage}[t]{\\dimexpr\\linewidth-\\schooltextwidth}\\raggedright
+        No d’identification du client: \\textbf{", client$`Client ID`, "}\\newline\\newline
+        Date de naissance: \\redact{\\textbf{", client$`Date of Birth`, "}}\\newline\\newline
+        École: \\begin{minipage}[t]{\\dimexpr\\linewidth-\\schooltextwidth}\\raggedright
             \\textbf{", client$`School`, "}
         \\end{minipage}\\newline
     \\\\
@@ -153,7 +153,7 @@ for (j in seq_len(nrow(params$client_data))) {
 \\end{table}
 
 \\normalsize\\raggedright
-As of \\textbf{", params$data_date, "}, our files show \\redact{\\textbf{", client$Name, "}} has not received the following immunization(s):
+À partir du \\textbf{", params$data_date, "}, nos dossiers montrent que/qu’ \\redact{\\textbf{", client$Name, "}} n’a pas reçu le ou les vaccins suivants:
 
 \\vspace{0.25cm}
 \\begin{bolditemize}
@@ -163,9 +163,9 @@ As of \\textbf{", params$data_date, "}, our files show \\redact{\\textbf{", clie
 \\vspace{0.25cm}
 
 \\normalsize\\raggedright
-It is the responsibility of the ", if(client$`Age 16+`) {"student or their parent/guardian"} else {"parent/guardian of the student"}, " to update this immunization record by reporting the vaccines received to Public Health. For your reference, a record of all immunizations on file with Public Health for the student, excluding seasonal vaccinations against influenza and COVID-19, has been included below.
+Il est de la responsabilité du père, de la mère, du tuteur ou de la tutrice de l’élève de mettre à jour ce dossier d’immunisation en éclarant les vaccins reçus au Bureau de santé.
 
-For information on immunization exemptions, please visit: \\myurl{https://wdgpublichealth.ca/your-kids/vaccination}.
+Pour obtenir des renseignements sur les exemptions de vaccination, veuillez consulter le site: \\myurl{https://wdgpublichealth.ca/your-kids/vaccination}.
 
 \\vspace{0.25cm}
 
@@ -179,16 +179,16 @@ For information on immunization exemptions, please visit: \\myurl{https://wdgpub
 \\hline
 \\endfirsthead
 
-\\multicolumn{", params$chart_num_diseases + 4L, "}{c}{{Continuation of immunization record}} \\\\
+\\multicolumn{", params$chart_num_diseases + 4L, "}{c}{{Suite du carnet de vaccination}} \\\\
 \\hline
 ", params$chart_col_header, "\\\\
 \\hline
 \\endhead
 
-\\multicolumn{", params$chart_num_diseases + 4L, "}{c}{{Immunization record continued on next page}}
+\\multicolumn{", params$chart_num_diseases + 4L, "}{c}{{Le carnet de vaccination continue à la page suivante}}
 \\endfoot
 ",
-"\\multicolumn{", params$chart_num_diseases + 4L, "}{c}{{End of immunization record}}
+"\\multicolumn{", params$chart_num_diseases + 4L, "}{c}{{Fin du carnet de vaccination}}
 \\endlastfoot
 ",
 client$`Vaccine History LaTeX`[[1]],
@@ -199,7 +199,7 @@ client$`Vaccine History LaTeX`[[1]],
 \\vspace*{\\fill}
 \\begin{justify}
 {\\footnotesize
-The information in this notice was collected under the authority of the \\textit{Health Protection and Promotion Act} in accordance with the \\textit{Municipal Freedom of Information and Protection of Privacy Act} and the \\textit{Personal Health Information Protection Act}. This information is used for the delivery of public health programs and services; the administration of the agency; and the maintenance of healthcare databases, registries and related research, in compliance with legal and regulatory requirements. Any questions about the management of this information should be addressed to the Chief Privacy Officer at 1-800-265-7293 ext. 2975 or privacy@wdgpublichealth.ca.}
+Les renseignements recueillis dans cet avis relèvent de la \\textit{Loi sur la protection et la promotion de la santé}, conformément à la \\textit{Loi sur l’accès à l’information municipale et la protection de la vie privée} et à la \\textit{Loi de 2004 sur la protection des renseignements personnels sur la santé}. Ces renseignements sont utilisés dans le cadre de la prestation des programmes et des services de santé publique, de l’administration de l’organisme et de l’entretien des bases de données, des registres et des travaux de recherche connexes liés aux soins de santé, conformément aux exigences juridiques et réglementaires. Pour toute question au sujet de la gestion de ces renseignements, veuillez communiquer avec le chef de la protection des renseignements personnels en composant le 1 800 265 7293, poste  2975 ou en envoyant un courriel à privacy@wdgpublichealth.ca.}
 \\end{justify}
 
 \\label{LastPage\\theletter}

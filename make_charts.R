@@ -85,7 +85,7 @@ chart_col_header = c(names(chart_diseases[chart_diseases == T]), "Other") |>
     pattern = "^([\\w\\s]+)$",
     replacement = "\\\\rotatebox{90}{\\1}")
 
-chart_col_header = c("Date Given", "At Age", chart_col_header, "Vaccine(s)") |>
+chart_col_header = c("Date", "Âge", chart_col_header, "Vaccin(s)") |>
   paste(collapse = " & ")
 
 # Vaccination history string parser
@@ -114,7 +114,7 @@ parse_vaccination_history = function(x, ignore_agents = NULL) {
 
 #Y M age formatting
 diff_ym = function(date1, date2){
-  ym_paste = function(x){paste0(floor(x / 12), "Y ", floor(x %% 12), "M")}
+  ym_paste = function(x){paste0(floor(x / 12), "A ", floor(x %% 12), "M")}
   lubridate::time_length(date1 - date2, unit = "month") |>
   ym_paste()
   }
@@ -296,6 +296,7 @@ if(filter(vaccine_occurrences_table, Matched == F) |> dim() |> extract(1) > 0L){
 rm(vaccine_occurrences)
 
 # Additional data processing for notice
+
 clients = clients |>
   
    # Final formatting and variable selection for document creation
@@ -310,7 +311,10 @@ clients = clients |>
     `Age 16+` = lubridate::time_length(
       delivery_date - `Date of Birth`,
       unit = "year") >= 16,
-    `Date of Birth` = format(`Date of Birth`, "%B %d, %Y"))
+    `Date of Birth` = withr::with_locale(
+      c(LC_TIME = "fr_FR.UTF-8"),
+      format(`Date of Birth`, "%d %B %Y"))
+  )
 
 # Batch clients for PDF generation
 clients = clients |>
@@ -340,7 +344,7 @@ for (iter_facility in seq_along(clients)) {
       output_dir = "output",
       params = list(
         client_data = notice_data,
-        data_date = format(data_date, "%B %d, %Y"),
+        data_date = withr::with_locale(c(LC_TIME = "fr_FR.UTF-8"), format(data_date, "%d %B %Y")),
         chart_num_diseases = chart_num_diseases,
         chart_col_header = chart_col_header),
       quiet = T)
