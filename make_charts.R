@@ -2,6 +2,21 @@
 # Parameters #
 ##############
 
+# Expected columns in input files
+expected_columns = c(
+  "School",
+  "Client ID",
+  "First Name",
+  "Last Name",
+  "Date of Birth",
+  "Street Address",
+  "City",
+  "Province",
+  "Postal Code",
+  "Vaccines Due",
+  "Received Agents"
+  )
+
 # Diseases, in order, to include immunization history chart
 # Mark as 'F' to collapse the disease into the 'Other' column
 chart_diseases = c(
@@ -138,25 +153,18 @@ clients = list.files(
   # Read all listed XLSX files
   # Column names and types specific to the report created
   purrr::map(\(x) {
-    readxl::read_xlsx(
+    df = readxl::read_xlsx(
       path = x,
       col_types = c(
-        rep("text", 11),
+        rep("text", 4),
         rep("date", 1),
-        rep("text", 42))) |>
-      select(
-        `School` = `School/ Daycare`,
-        `Client ID`,
-        `First Name`,
-        `Last Name`,
-        `Date of Birth`,
-        `Street Address`,
-        `City`,
-        `Province`,
-        `Postal Code`,
-        `Vaccines Due` = `Disease(s)/Agent(s)`,
-        `Received Agents` = `Overdue ISPA+.Imms Given`
-        )
+        rep("text", 6)))
+    
+    if (!all(names(df) == expected_columns)) {
+      warning("Input file structure not as expected, script may not proceed correctly")
+    }
+    
+    return(df)
     }) |>
 
   # Bind list of data frames
@@ -168,7 +176,6 @@ clients = list.files(
     .cols = all_of(c(
       "School", "First Name", "Last Name",
       "Street Address",
-      # "Street Address Line 1", "Street Address Line 2",
       "City", "Province", "Postal Code")),
     .fns = \(x){
       x |>
