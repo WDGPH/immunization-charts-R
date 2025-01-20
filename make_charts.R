@@ -339,7 +339,7 @@ for (iter_facility in seq_along(clients)) {
     cat("Building:", notice_filename, "\n")
 
     rmarkdown::render(
-      input = "chart_template.Rmd",
+      input = "chart_template_french.Rmd",
       output_file = notice_filename,
       output_dir = "output",
       params = list(
