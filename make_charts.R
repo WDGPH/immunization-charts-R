@@ -4,6 +4,7 @@
 
 # Expected columns in input files
 expected_columns = c(
+  "Language",
   "School",
   "Client ID",
   "First Name",
@@ -47,7 +48,7 @@ ignore_agents = c(
 # Used to calculate student age at time of mail delivery
 # Students 16 and older can be addressed directly
 # Letters for students under 16 should be addressed to their parent/guardian
-delivery_date = as.Date('2025-01-13')
+delivery_date = as.Date('2025-01-27')
 
 # To include in notice text as date that immunization history is reflective of
 data_date = as.Date('2024-12-11')
@@ -100,7 +101,10 @@ chart_col_header = c(names(chart_diseases[chart_diseases == T]), "Other") |>
     pattern = "^([\\w\\s]+)$",
     replacement = "\\\\rotatebox{90}{\\1}")
 
-chart_col_header = c("Date Given", "At Age", chart_col_header, "Vaccine(s)") |>
+chart_col_header_english = c("Date Given", "At Age", chart_col_header, "Vaccine(s)") |>
+  paste(collapse = " & ")
+
+chart_col_header_french = c("Date", "Âge", chart_col_header, "Vaccin(s)") |>
   paste(collapse = " & ")
 
 # Vaccination history string parser
@@ -134,6 +138,12 @@ diff_ym = function(date1, date2){
   ym_paste()
   }
 
+#A M age formatting
+diff_am = function(date1, date2){
+  am_paste = function(x){paste0(floor(x / 12), "A ", floor(x %% 12), "M")}
+  lubridate::time_length(date1 - date2, unit = "month") |>
+  am_paste()
+  }
 
 # Latex utility functions
 source("latex_utilities.R")
@@ -156,7 +166,7 @@ clients = list.files(
     df = readxl::read_xlsx(
       path = x,
       col_types = c(
-        rep("text", 4),
+        rep("text", 5),
         rep("date", 1),
         rep("text", 6)))
     
@@ -318,10 +328,18 @@ clients = clients |>
     `Age 16+` = lubridate::time_length(
       delivery_date - `Date of Birth`,
       unit = "year") >= 16,
-    `Date of Birth` = format(`Date of Birth`, "%B %d, %Y"))
+    `Date of Birth` = 
+      case_when(
+        `Language` == "French" ~ withr::with_locale(
+          c(LC_TIME = "fr_FR.UTF-8"),
+          format(`Date of Birth`, "%d %B %Y")),
+        .default = format(`Date of Birth`, "%B %d, %Y")
+      )
+    )
 
 # Batch clients for PDF generation
-clients = clients |>
+english_clients = clients |>
+  filter(`Language` == "English") |>
   nest_by(`School`, .keep = T) |>
   use_series(data) |>
   map(\(x) {
@@ -330,11 +348,21 @@ clients = clients |>
     use_series(data)
   })
 
-# For producing all notices:
-for (iter_facility in seq_along(clients)) {
-  for (iter_batch in seq_along(clients[[iter_facility]])) {
-    notice_data = clients[[iter_facility]][[iter_batch]]
-    notice_filename = paste0(
+french_clients = clients |>
+  filter(`Language` == "French") |>
+  nest_by(`School`, .keep = T) |>
+  use_series(data) |>
+  map(\(x) {
+   x |>
+    nest_by(batch = 1 + (row_number() - 1) %/% batch_size, .keep = T) |>
+    use_series(data)
+  })
+
+# For producing all English notices:
+for (iter_facility in seq_along(english_clients)) {
+  for (iter_batch in seq_along(english_clients[[iter_facility]])) {
+    notice_data = english_clients[[iter_facility]][[iter_batch]]
+    notice_filename = paste0("EN_", 
       str_replace_all(notice_data$School[1], "\\W+", "_"),
       "_",
       notice_data$batch[1],
@@ -343,14 +371,42 @@ for (iter_facility in seq_along(clients)) {
     cat("Building:", notice_filename, "\n")
 
     rmarkdown::render(
-      input = "chart_template.Rmd",
+      input = "chart_template_english.Rmd",
       output_file = notice_filename,
       output_dir = "output",
       params = list(
         client_data = notice_data,
         data_date = format(data_date, "%B %d, %Y"),
         chart_num_diseases = chart_num_diseases,
-        chart_col_header = chart_col_header),
+        chart_col_header = chart_col_header_english),
+      quiet = T)
+    
+    rm(notice_data)
+    rm(notice_filename)
+  }
+}
+
+# For producing all French notices:
+for (iter_facility in seq_along(french_clients)) {
+  for (iter_batch in seq_along(french_clients[[iter_facility]])) {
+    notice_data = french_clients[[iter_facility]][[iter_batch]]
+    notice_filename = paste0("FR_",
+      str_replace_all(notice_data$School[1], "\\W+", "_"),
+      "_",
+      notice_data$batch[1],
+      ".pdf")
+    
+    cat("Building:", notice_filename, "\n")
+
+    rmarkdown::render(
+      input = "chart_template_french.Rmd",
+      output_file = notice_filename,
+      output_dir = "output",
+      params = list(
+        client_data = notice_data,
+        data_date = withr::with_locale(c(LC_TIME = "fr_FR.UTF-8"), format(data_date, "%d %B %Y")),
+        chart_num_diseases = chart_num_diseases,
+        chart_col_header = chart_col_header_french),
       quiet = T)
     
     rm(notice_data)
