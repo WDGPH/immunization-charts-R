@@ -197,10 +197,11 @@ clients = list.files(
           
         # Refer to diseases by common names
         str_replace_all(
-         pattern = c(
-          "Poliomyelitis" = "Polio",
-          "Human papilloma virus infection" = "Human Papillomavirus (HPV)",
-          "Varicella" = "Varicella (Chickenpox)")) |>
+          pattern = c(
+            "Haemophilus influenzae infection, invasive" = "Invasive Haemophilus influenzae infection (Hib)",
+            "Poliomyelitis" = "Polio",
+            "Human papilloma virus infection" = "Human Papillomavirus (HPV)",
+            "Varicella" = "Varicella (Chickenpox)")) |>
           
         # Create LaTeX list of due immunizations
         str_replace_all(
