@@ -10,15 +10,34 @@ This project provides an approach to the creation of custom immunization history
 ### Data
 This project is intended to be used with data extracts from [Panorama PEAR](https://accessonehealth.ca/).
 
-Input files, in `xlsx` format should be organized in a subfolder `input` (out of caution, input and output folders are `.gitignore`d, and need to be recreated by the user). Each `xlsx` file should have a shared format. It's suggested that `xlsx` exports from Panorama PEAR are batched by client birth year. The report must at minimum include "Client ID", "Date of Birth", and a string representation of the immunization history, in a column "Received Agents". To create this immunization history string, a "Repeater" Data Container must be used in the Panorama PEAR report builder. The repeater will be formatted as:
+Input files, in `xlsx` format should be organized in a subfolder `input` (out of caution, input and output folders are `.gitignore`d, and need to be recreated by the user). Each `xlsx` file should be a single sheet with the following columns:
+- `Language`
+- `School`
+- `Client ID`
+- `First Name`
+- `Last Name`
+- `Date of Birth`
+- `Street Address`
+- `City`
+- `Province`
+- `Postal Code`
+- `Vaccines Due`
+- `Received Agents`
+
+
+In case of large cohorts, it may be helpful to have `xlsx` exports from Panorama PEAR batched by client birth year. 
+
+`Language` should be set to either `French` or `English` for each client.
+
+`Received Agents` is a string representation of the immunization history. To create this immunization history string, a "Repeater" Data Container must be used in the Panorama PEAR report builder. The repeater will be formatted as:
 1. `[PresentationView].[Immunization Received].[Date Administered]`
 2. Text box with space, dash, and a space (` - `)
 3. `[PresentationView].[Immunization Received].[Immunizing Agent]`
 
 ### Functionality
-`make_charts.R` contains data processing steps, with some functions relating specifically to formatting information for use in LaTeX code separated out into `latex_utilities.R`. Based on your particular report, adjust the `col_types` and `select`ed columns for your particular data file(s) in `make_charts.R`.
+`make_charts.R` contains data processing steps, with some functions relating specifically to formatting information for use in LaTeX code separated out into `latex_utilities.R`.
 
-`chart_template.Rmd` allows for generation of PDF files using LaTeX, by inserting processed data elements into LaTeX code. This LaTeX code can be customized and expanded upon such that the immunization chart is an element in a larger letter with:
+`chart_template_english.Rmd` and `chart_template_french.Rmd` allows for generation of PDF files using LaTeX, by inserting processed data elements into LaTeX code. This LaTeX code can be customized and expanded upon such that the immunization chart is an element in a larger letter with:
 - Addressee information that can be shown in the window of an envelope
 - Public Health Unit branding
 - List of overdue diseases
