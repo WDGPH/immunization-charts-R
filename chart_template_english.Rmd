@@ -1,7 +1,7 @@
 ---
 output:
   pdf_document:
-    latex_engine: xelatex
+    latex_engine: pdflatex
     keep_tex: false
 documentclass: article
 header-includes:
@@ -17,13 +17,13 @@ header-includes:
   - \usepackage{fancyhdr} # custom page numbering
   - \usepackage{afterpage} # For adding a blank page
   - \usepackage{lastpage}
-  - \usepackage{fontspec} # font utilities
   - \usepackage{etoolbox} # for creating toggles
   - \usepackage{calc} # widthof function for redact
   - \usepackage{enumitem} # for custom list types
   - \usepackage{soul} # for better underline
-  - \setmainfont{Arial} # default font type 
   - \usepackage{xcolor} # for custom colours
+  - \usepackage[scaled]{helvet} # use Helvetica (Arial-like)
+  - \renewcommand{\familydefault}{\sfdefault} # make Helvetica the default font
   - \newcounter{letter} # Counter for letters
   - \usepackage{needspace}
 params:
@@ -118,7 +118,7 @@ for (j in seq_len(nrow(params$client_data))) {
 \\vspace{0.5cm}
 
 \\begin{minipage}[c]{0.35\\textwidth}
-  \\includegraphics[width=6cm]{assets/logo.eps}
+  \\includegraphics[width=6cm]{assets/logo.pdf}
 \\end{minipage}
 \\hfill
 \\begin{minipage}[c]{0.60\\textwidth}

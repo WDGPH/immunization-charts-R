@@ -2,6 +2,8 @@
 # Parameters #
 ##############
 
+output_folder = paste0("demo-output-", stringr::str_remove_all(Sys.time(), "\\W"))
+
 # Expected columns in input files
 expected_columns = c(
   "Language",
@@ -48,10 +50,10 @@ ignore_agents = c(
 # Used to calculate student age at time of mail delivery
 # Students 16 and older can be addressed directly
 # Letters for students under 16 should be addressed to their parent/guardian
-delivery_date = as.Date('2025-01-27')
+delivery_date = as.Date('2025-04-08')
 
 # To include in notice text as date that immunization history is reflective of
-data_date = as.Date('2024-12-11')
+data_date = as.Date('2025-04-01')
 
 # Minimum number of rows to show in immunization history chart
 # Charts will be padded with rows as appropriate
@@ -66,6 +68,9 @@ batch_size = 100L
 # End parameters #
 ##################
 
+# Create output folder
+dir.create(path = output_folder)
+
 # Don't warn about package conflicts
 options(conflicts.policy = list("warn" = F))
 
@@ -73,8 +78,11 @@ library(tidyr)
 library(stringr)
 library(dplyr)
 library(purrr)
+library(furrr)
 library(magrittr)
 library(kableExtra)
+
+plan(multisession)
 
 # Load vaccine - disease reference table
 # Collapse as desired
@@ -179,6 +187,9 @@ clients = list.files(
 
   # Bind list of data frames
   bind_rows() |>
+  
+  # Just do 1000 for demo
+  filter(row_number() <= 1000) |>
   
   # Make text uppercase
   mutate(
@@ -303,20 +314,18 @@ vaccine_occurrences_table = tibble(`Vaccine` = vaccine_occurrences) |>
 
 readr::write_csv(
   vaccine_occurrences_table,
-  "output/vaccine_occurrences.csv")
+  paste0(output_folder, "/vaccine_occurrences.csv"))
 
 if(filter(vaccine_occurrences_table, Matched == F) |> dim() |> extract(1) > 0L){
   warning("Unmatched vaccines detected. Review output/vaccine_occurrences.csv,
        and either make additions to ignore_agents parameter, or to
-       vaccine reference file (vaccine_reference.xlsx) and re-run.") 
+       vaccine reference file (vaccine_reference.xlsx) and re-run.")
   }
-
-rm(vaccine_occurrences)
 
 # Additional data processing for notice
 clients = clients |>
   
-   # Final formatting and variable selection for document creation
+  # Final formatting and variable selection for document creation
   rowwise() |>
   mutate(
     `Name` = paste(na.omit(c_across(ends_with("Name"))), collapse = " ")) |>
@@ -337,79 +346,87 @@ clients = clients |>
       )
     )
 
-# Batch clients for PDF generation
-english_clients = clients |>
-  filter(`Language` == "English") |>
-  nest_by(`School`, .keep = T) |>
-  use_series(data) |>
-  map(\(x) {
-   x |>
-    nest_by(batch = 1 + (row_number() - 1) %/% batch_size, .keep = T) |>
-    use_series(data)
-  })
-
-french_clients = clients |>
-  filter(`Language` == "French") |>
-  nest_by(`School`, .keep = T) |>
-  use_series(data) |>
-  map(\(x) {
-   x |>
-    nest_by(batch = 1 + (row_number() - 1) %/% batch_size, .keep = T) |>
-    use_series(data)
-  })
-
-# For producing all English notices:
-for (iter_facility in seq_along(english_clients)) {
-  for (iter_batch in seq_along(english_clients[[iter_facility]])) {
-    notice_data = english_clients[[iter_facility]][[iter_batch]]
-    notice_filename = paste0("EN_", 
-      str_replace_all(notice_data$School[1], "\\W+", "_"),
-      "_",
-      notice_data$batch[1],
-      ".pdf")
-    
-    cat("Building:", notice_filename, "\n")
-
-    rmarkdown::render(
-      input = "chart_template_english.Rmd",
-      output_file = notice_filename,
-      output_dir = "output",
-      params = list(
-        client_data = notice_data,
-        data_date = format(data_date, "%B %d, %Y"),
-        chart_num_diseases = chart_num_diseases,
-        chart_col_header = chart_col_header_english),
-      quiet = T)
-    
-    rm(notice_data)
-    rm(notice_filename)
-  }
+# Helper to split into batches
+split_batches = function(data, batch_size) {
+  data |>
+    mutate(batch = 1 + (row_number() - 1) %/% batch_size) |>
+    group_split(batch)
 }
 
-# For producing all French notices:
-for (iter_facility in seq_along(french_clients)) {
-  for (iter_batch in seq_along(french_clients[[iter_facility]])) {
-    notice_data = french_clients[[iter_facility]][[iter_batch]]
-    notice_filename = paste0("FR_",
-      str_replace_all(notice_data$School[1], "\\W+", "_"),
-      "_",
-      notice_data$batch[1],
-      ".pdf")
-    
-    cat("Building:", notice_filename, "\n")
+# Render batch function
+render_batch = function(batch_data, lang = "EN") {
+  notice_data = batch_data
+  notice_filename = paste0(
+    lang, "_",
+    stringr::str_replace_all(notice_data$School[1], "\\W+", "_"),
+    "_", notice_data$batch[1],
+    ".pdf"
+  )
+  
+  cat("Rendering:", notice_filename, "with", nrow(notice_data), "students\n")
+  
+  rmarkdown::render(
+    input = if (lang == "EN") "chart_template_english.Rmd" else "chart_template_french.Rmd",
+    output_file = notice_filename,
+    output_dir = output_folder,
+    params = list(
+      client_data = notice_data,
+      data_date = if (lang == "FR") {
+        withr::with_locale(c(LC_TIME = "fr_FR.UTF-8"), format(data_date, "%d %B %Y"))
+      } else {
+        format(data_date, "%B %d, %Y")
+      },
+      chart_num_diseases = chart_num_diseases,
+      chart_col_header = if (lang == "FR") chart_col_header_french else chart_col_header_english
+    ),
+    quiet = TRUE
+  )
+}
 
-    rmarkdown::render(
-      input = "chart_template_french.Rmd",
-      output_file = notice_filename,
-      output_dir = "output",
-      params = list(
-        client_data = notice_data,
-        data_date = withr::with_locale(c(LC_TIME = "fr_FR.UTF-8"), format(data_date, "%d %B %Y")),
-        chart_num_diseases = chart_num_diseases,
-        chart_col_header = chart_col_header_french),
-      quiet = T)
+# Batch clients for PDF generation
+# English Clients
+{
+  start_time = Sys.time()
+  
+  progressr::with_progress({
+    p = progressr::progressor(steps = nrow(clients |> filter(Language == "English")))
     
-    rm(notice_data)
-    rm(notice_filename)
-  }
+    clients |>
+      filter(Language == "English") |>
+      group_split(School) |>
+      purrr::map(\(school_df) split_batches(school_df, batch_size)) |>
+      purrr::flatten() |>
+      furrr::future_map(\(x) {
+        render_batch(x, lang = "EN")
+        p(amount = nrow(x))
+      })
+  })
+
+  end_time = Sys.time()
+  cat("Total render time:", round(difftime(end_time, start_time, units = "secs"), 2), "seconds\n")
+}
+
+
+# French Clients
+{
+  start_time = Sys.time()
+  
+  progressr::with_progress({
+    p = progressr::progressor(steps = nrow(clients |> filter(Language == "French")))
+    
+    clients |>
+      filter(Language == "French") |>
+      group_split(School) |>
+      purrr::map(\(school_df) split_batches(school_df, batch_size)) |>
+      purrr::flatten() |>
+      furrr::future_map(\(x) {
+        render_batch(x, lang = "FR")
+        p(amount = nrow(x))
+      })
+  })
+  
+  end_time = Sys.time()
+  
+  end_time = Sys.time()
+  cat("Total render time:", round(difftime(end_time, start_time, units = "secs"), 2), "seconds\n")
 }
