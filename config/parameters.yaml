@@ -1,0 +1,62 @@
+# Parameters
+
+# Name of output folder which will be updated dynamically in the script
+output_folder: "demo-output-{{timestamp}}"  
+
+# Diseases, in order, to include immunization history chart
+# Mark as 'F' to collapse the disease into the 'Other' column
+expected_columns:
+  - Language
+  - School
+  - Client ID
+  - First Name
+  - Last Name
+  - Date of Birth
+  - Street Address
+  - City
+  - Province
+  - Postal Code
+  - Vaccines Due
+  - Received Agents
+
+# Vaccines or agents to ignore in/drop from immunization history
+chart_diseases:
+  Diphtheria: true
+  Tetanus: true
+  Pertussis: true
+  Polio: true
+  Hib: true
+  Pneumococcal: true
+  Rotavirus: true
+  Measles: true
+  Mumps: true
+  Rubella: true
+  Meningococcal: true
+  Varicella: true
+  Hepatitis B: true
+  HPV: true
+
+# Vaccines or agents to ignore in/drop from immunization history
+ignore_agents:
+  - RSVAb
+  - VarIg
+  - HBIg
+  - RabIg
+  - Ig
+
+# Used to calculate student age at time of mail delivery
+# Students 16 and older can be addressed directly
+# Letters for students under 16 should be addressed to their parent/guardian
+delivery_date: "2025-04-08"
+
+# To include in notice text as date that immunization history is reflective of
+data_date: "2025-04-01"
+
+# Minimum number of rows to show in immunization history chart
+# Charts will be padded with rows as appropriate
+min_rows: 5
+
+# Number of clients to include in a single PDF
+# Note: 10 PDFs with 10 clients each will run slower than 1 PDF with 100 clients
+# Use a batch size of 1 if you would like a single client per PDF file.
+batch_size: 100
