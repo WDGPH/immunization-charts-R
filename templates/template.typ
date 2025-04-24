@@ -1,5 +1,6 @@
 // --- IMMUNIZATION NOTICE TYPST TEMPLATE --- //
-// Description: A typst template for dynamically created immunization reports for WDGPH. Template uses mock data about Peter Parker. 
+// Description: A typst template demonstrating table usage,
+//              hyperlinks, and custom styling for headers.
 // Author: Kassy Raymond
 // Date Created: 2025-04-24
 // Date Last Updated: 2025-04-24
@@ -23,10 +24,11 @@
 
 // Font formatting
 #set text(
-  font: "PT Sans",
+  font: "Fira Sans",
   size: 10pt
 )
 
+#let immunization_notice(client) = block[
 // Begin content
 #align(center)[
 #text(size: 14pt, fill: darkred)[*Bring this notice to your family doctor or healthcare provider*]
@@ -39,7 +41,7 @@
   
   columns: (50%,40%), 
   gutter: 5%, 
-  [#image("assets/logo.svg", width: 6.5cm)],
+  [#image("logo.svg", width: 6.5cm)],
   [#set align(right + bottom)
     #text(size: 20pt, fill: black)[*Immunization Notice*]
   ]
@@ -56,17 +58,16 @@
   inset: 10pt,
   [#align(left)[
     To: \
-*PETER PARKER* \
+#smallcaps[*#client.name*] \
 \
-*20 INGRAM STREET* \
-*FOREST HILLS, NEW YORK 11375*]
+*#client.address* ]
   ], 
   [#align(left)[
-    Client ID: *SPDR0001*\
+    Client ID: *#client.clientId*\
     \
-    Date of Birth: *August 10, 2001*\
+    Date of Birth: *#client.dateOfBirth*\
     \
-    School: *MIDTOWN SCHOOL OF SCIENCE AND TECHNOLOGY*
+    School: *#client.school*
   ]],
 )
 ]
@@ -141,4 +142,10 @@ End of immunization record
 #set align(left)
 #set align(bottom)
 #text(size: 8pt)[
-The information in this notice was collected under the authority of the _Health Protection and Promotion Act_ in accordance with the _Municipal Freedom of Information and Protection of Privacy Act_ and the _Personal Health Information Protection Act_. This information is used for the delivery of public health programs and services; the administration of the agency; and the maintenance of healthcare databases, registries and related research, in compliance with legal and regulatory requirements. Any questions about the management of this information should be addressed to the Chief Privacy Officer at 1-800-265-7293 ext. 2975 or #link("privacy@wdgpublichealth.ca").]
+The information in this notice was collected under the authority of the _Health Protection and Promotion Act_ in accordance with the _Municipal Freedom of Information and Protection of Privacy Act_ and the _Personal Health Information Protection Act_. This information is used for the delivery of public health programs and services; the administration of the agency; and the maintenance of healthcare databases, registries and related research, in compliance with legal and regulatory requirements. Any questions about the management of this information should be addressed to the Chief Privacy Officer at 1-800-265-7293 ext. 2975 or #link("privacy@wdgpublichealth.ca").]]
+
+#let clients = json("clients.json")
+
+#for client in clients [
+  #immunization_notice(client)
+]
