@@ -12,16 +12,16 @@ echo = ""
 
 # FIX ME: Check to see if input file exists
 
-echo = "Converting ${INDIR}${INFILE} to csv"
+echo = "Converting ${INDIR}/${INFILE} to csv"
 echo = ""
 echo = ""
 
-python convert_excel_csv.py ${INDIR}${INFILE}
+python convert_excel_csv.py ${INDIR}/${INFILE}
 
 echo = "" 
 echo = ""
-echo = "Separating files by School and Language"
+echo = "Separating files by School"
 echo = ""
 echo = "" 
 
-awk '{print > $1".txt"}' ../input/anonymized_data_sample.csv
+awk -F';' '{print > $2".txt"}' ../input/anonymized_data_sample.csv
