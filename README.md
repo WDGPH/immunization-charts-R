@@ -39,3 +39,25 @@ In case of large cohorts, it may be helpful to have `xlsx` exports from Panorama
 
 ### Functionality 
 To be added... 
+
+### Data Pipeline Overview
+
+```mermaid
+flowchart TD
+%% Nodes
+A("Panorama PEAR"):::green
+B("Data extracts Ggnerated"):::green
+C("Data extracts sent to Kassy and Justin (Information Systems and Digital Innovation)"):::green
+D("Data extracts uploaded to KubeFlow environment"):::green
+E("Run data pipeline"):::green
+F("Notices generated"):::green
+G("Notices downloaded to local machine"):::green
+H("Notices mailed, printed, or delivered to client."):::green
+I("Data extracts deleted from all environments"):::green
+
+%% Edges
+A --> B --> C --> D --> E --> F --> G --> H --> I 
+
+%% Styling
+classDef green fill:#B2DFDB,stroke:#00897B,stroke-width:2px;
+```
