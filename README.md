@@ -45,19 +45,29 @@ To be added...
 ```mermaid
 flowchart TD
 %% Nodes
-A("Panorama PEAR"):::green
-B("Data extracts Ggnerated"):::green
-C("Data extracts sent to Kassy and Justin (Information Systems and Digital Innovation)"):::green
-D("Data extracts uploaded to KubeFlow environment"):::green
-E("Run data pipeline"):::green
-F("Notices generated"):::green
-G("Notices downloaded to local machine"):::green
-H("Notices mailed, printed, or delivered to client."):::green
-I("Data extracts deleted from all environments"):::green
+A("Panorama PEAR")
+B("Data extracts generated")
+C("Data extracts sent to Kassy and Justin (Information Systems and Digital Innovation)")
+D("Data extracts uploaded to KubeFlow environment")
+E("Run data pipeline")
+F("Notices generated")
+G("Notices downloaded to local machine")
+H("Notices mailed, printed, or delivered to client.")
+I("Data extracts deleted from all environments")
+
 
 %% Edges
 A --> B --> C --> D --> E --> F --> G --> H --> I 
 
+
 %% Styling
-classDef green fill:#B2DFDB,stroke:#00897B,stroke-width:2px;
+style A stroke:#000000,stroke-width:2px,fill:#ffffff
+style B stroke:#000000,stroke-width:2px,fill:#ffffff
+style C stroke:#000000,stroke-width:2px,fill:#ffffff
+style D stroke:#000000,stroke-width:2px,fill:#ffffff
+style E stroke:#000000,stroke-width:2px,fill:#ffffff
+style F stroke:#000000,stroke-width:2px,fill:#ffffff
+style G stroke:#000000,stroke-width:2px,fill:#ffffff
+style H stroke:#000000,stroke-width:2px,fill:#ffffff
+style I stroke:#000000,stroke-width:2px,fill:#ffffff
 ```
