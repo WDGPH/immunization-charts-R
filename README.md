@@ -39,35 +39,3 @@ In case of large cohorts, it may be helpful to have `xlsx` exports from Panorama
 
 ### Functionality 
 To be added... 
-
-### Data Pipeline Overview
-
-```mermaid
-flowchart TD
-%% Nodes
-A("Panorama PEAR")
-B("Data extracts generated")
-C("Data extracts sent to Kassy and Justin (Information Systems and Digital Innovation)")
-D("Data extracts uploaded to KubeFlow environment")
-E("Run data pipeline")
-F("Notices generated")
-G("Notices downloaded to local machine")
-H("Notices mailed, printed, or delivered to client.")
-I("Data extracts deleted from all environments")
-
-
-%% Edges
-A --> B --> C --> D --> E --> F --> G --> H --> I 
-
-
-%% Styling
-style A stroke:#000000,stroke-width:2px,fill:#ffffff
-style B stroke:#000000,stroke-width:2px,fill:#ffffff
-style C stroke:#000000,stroke-width:2px,fill:#ffffff
-style D stroke:#000000,stroke-width:2px,fill:#ffffff
-style E stroke:#000000,stroke-width:2px,fill:#ffffff
-style F stroke:#000000,stroke-width:2px,fill:#ffffff
-style G stroke:#000000,stroke-width:2px,fill:#ffffff
-style H stroke:#000000,stroke-width:2px,fill:#ffffff
-style I stroke:#000000,stroke-width:2px,fill:#ffffff
-```
