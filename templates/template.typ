@@ -28,7 +28,7 @@
   size: 10pt
 )
 
-#let immunization_notice(client) = block[
+#let immunization_notice(client, immunizationsDue) = block[
 // Begin content
 #align(center)[
 #text(size: 14pt, fill: darkred)[*Bring this notice to your family doctor or healthcare provider*]
@@ -58,16 +58,17 @@
   inset: 10pt,
   [#align(left)[
     To: \
-#smallcaps[*#client.name*] \
+*#client.name* \
 \
-*#client.address* ]
-  ], 
+*#client.address*  \
+*#client.city*  ]]
+, 
   [#align(left)[
-    Client ID: *#client.clientId*\
+    Client ID: #smallcaps[*#client.clientId*]\
     \
     Date of Birth: *#client.dateOfBirth*\
     \
-    School: *#client.school*
+    School: #smallcaps[*#client.school*]
   ]],
 )
 ]
@@ -77,12 +78,14 @@
 
 // Notice for immunizations
 
-As of *April 01, 2025* our files show that *PETER PARKER* has not received the following immunization(s):
+As of *April 01, 2025* our files show that *#client.name* has not received the following immunization(s):
 
 #v(0.25cm)
 
-- *Goblin Fever*
-- *Radioactive Bite*
+#for immunization in immunizationsDue [
+- *#immunization*
+]
+
 
 #v(0.25cm)
 
@@ -147,5 +150,8 @@ The information in this notice was collected under the authority of the _Health 
 #let clients = json("clients.json")
 
 #for client in clients [
-  #immunization_notice(client)
+  
+  #let immunizationsDue = client.immunizationsDue
+  
+  #immunization_notice(client, immunizationsDue)
 ]
