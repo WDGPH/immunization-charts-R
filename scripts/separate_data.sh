@@ -12,6 +12,28 @@ echo ""
 
 echo ""
 echo ""
+echo "Checking to see if the vaccine reference spreadsheet exists..."
+echo ""
+echo ""
+
+if [ ! -f "${INDIR}/vaccine_reference.xlsx" ]
+then
+    echo "ERROR! File ${INDIR}/vaccine_reference.xlsx does not exist. Check your system arguments to ensure you are specifying the correct input directory. Check to ensure that the vaccine reference sheet exists and is in the correct directory."
+fi
+
+echo ""
+echo ""
+echo "If the vaccine reference json does not already exist we will convert the spreadsheet into json for further processing."
+echo ""
+echo ""
+
+if [ ! -f "${INDIR}/vaccine_reference.json" ]
+then 
+    python convert_vaccine_reference.py
+fi
+
+echo ""
+echo ""
 echo " Checking to see if ${INDIR}/${INFILE} exists..."
 echo "" 
 echo "" 
@@ -106,7 +128,6 @@ echo ""
 echo "Separating English records into batches of 100"
 echo ""
 echo ""
-
 
 
 
