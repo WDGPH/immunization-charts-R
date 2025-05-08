@@ -20,8 +20,20 @@ python convert_excel_csv.py ${INDIR}/${INFILE}
 
 echo = "" 
 echo = ""
-echo = "Separating files by School"
+echo = "Separating files by language"
 echo = ""
 echo = "" 
 
-awk -F';' '{print > $2".txt"}' ../input/anonymized_data_sample.csv
+awk -F';' '{print > "../output/" $1 ".txt"}' ../input/anonymized_data_sample.csv
+
+echo = ""
+echo = ""
+echo = "Separating files by school"
+echo = ""
+echo = ""
+
+for i in "English" "French"
+do
+    echo $i
+    awk -F';' '{print > "../output/"${i} "_" $2".txt"}' ../output/$i.txt
+done
