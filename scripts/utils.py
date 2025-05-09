@@ -11,7 +11,7 @@ def calculate_age(DOB, DOV):
         DOV (str): Date of visit in the format "Mon DD, YYYY" (e.g., "May 8, 2025").
 
     Returns:
-        str: Age formatted as "X Y Y M", where Y is years and M is months.
+        str: Age formatted as "XY XM", where Y is years and M is months.
     
     Example:
         calculate_age("2009-09-08", "May 8, 2025") -> "15Y 8M"
