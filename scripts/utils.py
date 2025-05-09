@@ -1,5 +1,5 @@
 import typst
-from datetime import date, datetime
+from datetime import datetime
 
 def calculate_age(DOB, DOV):
 
