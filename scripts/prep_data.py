@@ -2,7 +2,7 @@ import pandas as pd
 import sys
 import re
 from datetime import date
-from utils import calculate_age
+from utils import calculate_age, remove_agents
 import yaml
 
 
@@ -15,7 +15,9 @@ path_config = sys.argv[2]
 with open(path_config, 'r') as f:
     data = yaml.full_load(f)
 
+# Take info out of config file
 expected_columns = data['expected_columns']
+ignore_agents = data['ignore_agents']
 
 # Conduct checks of the data using yaml file...
 # Check to see if the expected columns in the df match what is in the yaml
@@ -34,12 +36,17 @@ for row in df.itertuples(index=True):
     
     for match in matches:
         date_str, vaccine = match.split(' - ')
-        structured_entries.append({
-            'date': date_str.strip(),
-            'vaccine': vaccine.strip(),
-            'client_id': row.Client_ID,
-            'date_of_birth':row.Date_of_Birth,
-            'age':calculate_age(row.Date_of_Birth, date_str)
-        })
 
-#print(structured_entries)
+        # Remove vaccines or agents that appear in the yaml/config file
+        if vaccine in list(ignore_agents):
+            break
+        else:
+            structured_entries.append({
+                'date': date_str.strip(),
+                'vaccine': vaccine.strip(),
+                'client_id': row.Client_ID,
+                'date_of_birth':row.Date_of_Birth,
+                'age':calculate_age(row.Date_of_Birth, date_str)
+            })
+
+print(structured_entries)
