@@ -2,9 +2,9 @@ import pandas as pd
 import sys
 import re
 from datetime import date
-from utils import calculate_age, remove_agents
+from utils import calculate_age
 import yaml
-
+import json
 
 # Read vaccination file
 path_vax = sys.argv[1]
@@ -14,6 +14,13 @@ df = pd.read_csv(path_vax, sep = ";")
 path_config = sys.argv[2]
 with open(path_config, 'r') as f:
     data = yaml.full_load(f)
+
+# Read in disease map file 
+path_disease_map = sys.argv[3]
+with open (path_disease_map, 'r') as f:
+    disease_map = json.load(f)
+
+print(disease_map)
 
 # Take info out of config file
 expected_columns = data['expected_columns']

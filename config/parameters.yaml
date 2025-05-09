@@ -19,7 +19,7 @@ expected_columns:
   - Vaccines Due
   - Received Agents
 
-# Vaccines or agents to ignore in/drop from immunization history
+# Vaccines or agents that should occur in the template for the chart 
 chart_diseases:
   Diphtheria: true
   Tetanus: true
@@ -43,6 +43,7 @@ ignore_agents:
   - HBIg
   - RabIg
   - Ig
+  - HPV-9
 
 # Used to calculate student age at time of mail delivery
 # Students 16 and older can be addressed directly
