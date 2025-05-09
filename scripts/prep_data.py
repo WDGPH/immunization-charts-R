@@ -20,8 +20,6 @@ path_disease_map = sys.argv[3]
 with open (path_disease_map, 'r') as f:
     disease_map = json.load(f)
 
-print(disease_map)
-
 # Take info out of config file
 expected_columns = data['expected_columns']
 ignore_agents = data['ignore_agents']
@@ -37,7 +35,20 @@ df.columns = df.columns.str.replace(' ', '_')
 
 structured_entries = []
 
-for row in df.itertuples(index=True):
+for index, row in df.iterrows():
+
+    # Replace vaccines due with common name found in disease map 
+    vaccines_due_updated = []
+    for vaccine in row.Vaccines_Due.split(','):
+        vax_to_compare = vaccine.strip()
+        mapped = disease_map.get(vax_to_compare, vax_to_compare)
+        vaccines_due_updated.append(mapped)
+    
+    # Replace col based on mapped values 
+    # First convert it into a string
+    # FIXME - should there be a comma after the last disease? 
+    vaccines_due_str = ', '.join(str(e) for e in vaccines_due_updated)
+    df.at[index, 'Vaccines_Due'] = vaccines_due_str
 
     matches = re.findall(r'\w{3} \d{1,2}, \d{4} - [^,]+', row.Received_Agents)
     
@@ -56,4 +67,4 @@ for row in df.itertuples(index=True):
                 'age':calculate_age(row.Date_of_Birth, date_str)
             })
 
-print(structured_entries)
+#print(structured_entries)
