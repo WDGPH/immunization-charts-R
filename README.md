@@ -56,3 +56,8 @@ The script:
 * An `awk` script is ran to separate the file into schools, naming each output file according to school. 
 * A directory is created in the specified output directory to hold the data once it is split by language (English or French).
 * An `awk` script is ran to separate each school file by language, naming each output file according to school and language in the created directory.
+
+*Functionality to be added* includes adding the prep_data script to the shell pipeline.
+
+Currently in progress is prep_data.py which can be run: 
+`python prep_data.py ../output/by_language/English_Double_Double_High_School.csv  ../config/parameters.yaml ../config/disease_map.json`
