@@ -118,7 +118,7 @@ notices = defaultdict(lambda: {
     "age": "",
     "over_16": "",
     "vaccines_due": "",
-    "recieved": []
+    "received": []
 })
 
 # Create a list to hold structured entries for the received agents
@@ -168,7 +168,7 @@ for index, row in df.iterrows():
         if vaccine in list(ignore_agents):
             break
         else:
-            # Create a list of diseases that the client has recieved using the vaccine referene json file.
+            # Create a list of diseases that the client has received using the vaccine referene json file.
             diseases = vaccine_ref.get(vaccine, vaccine)
 
             structured_entries.append({
@@ -178,7 +178,7 @@ for index, row in df.iterrows():
                 'diseases': diseases
             })
             # Append the structured entry to the client's received list
-            notices[client_id]["recieved"].append(structured_entries[-1])
+            notices[client_id]["received"].append(structured_entries[-1])
 
 # =============================================================================
 # OUTPUT
