@@ -6,11 +6,12 @@ Author: Kassy Raymond
 Created: 2025-05-15
 Last modified: 2025-05-15
 
-Usage: python prep_data.py <vaccination_file> <config_file> <disease_map_file>
+Usage: python prep_data.py <vaccination_file> <config_file> <disease_map_file> <vaccine_reference_file>
 Input:
-    - vaccination_file: CSV file containing vaccination data with columns such as Client_ID, First_Name, Last_Name, Date_of_Birth, Street_Address, City, Postal_Code, Province, Vaccines_Due, Received_Agents.
+    - vaccination_file: CSV file containing client vaccination data with columns such as Client_ID, First_Name, Last_Name, Date_of_Birth, Street_Address, City, Postal_Code, Province, Vaccines_Due, Received_Agents.
     - config_file: YAML file containing configuration settings such as expected columns, ignore agents, delivery date, and data date.
-    - disease_map_file: JSON file mapping vaccine names to common names.
+    - disease_map_file: JSON file mapping disease names to common names.
+    - vaccine_reference_file: JSON file mapping vaccine names to disease names.
 """
 
 # =============================================================================
@@ -32,11 +33,11 @@ import os
 # =============================================================================
 
 # Check to see if correct number of system arguments   
-if len(sys.argv) != 4:
-    print("Usage: python prep_data.py <vaccination_file> <config_file> <disease_map_file>")
+if len(sys.argv) != 5:
+    print("Usage: python prep_data.py <client_vaccination_file> <config_file> <disease_map_file> <vaccine_reference_file>")
     sys.exit(1)
 
-# Check to see if the vaccination file exists
+# Check to see if the client vaccination file exists
 if not os.path.isfile(sys.argv[1]):
     print(f"Vaccination file {sys.argv[1]} does not exist.")
     sys.exit(1)
@@ -49,6 +50,11 @@ if not os.path.isfile(sys.argv[2]):
 # Check to see if the disease map file exists
 if not os.path.isfile(sys.argv[3]):
     print(f"Disease map file {sys.argv[3]} does not exist.")
+    sys.exit(1)
+
+# Check to see if the vaccine reference file exists
+if not os.path.isfile(sys.argv[4]):
+    print(f"Vaccine reference file {sys.argv[4]} does not exist.")
     sys.exit(1)
 
 # =============================================================================
@@ -140,6 +146,8 @@ for index, row in df.iterrows():
 
     matches = re.findall(r'\w{3} \d{1,2}, \d{4} - [^,]+', row.Received_Agents)
     
+    # Create a list of diseases that the client has recieved using the vaccine referene json file.
+
     for match in matches:
         date_str, vaccine = match.split(' - ')
 
