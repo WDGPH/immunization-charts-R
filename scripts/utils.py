@@ -26,7 +26,7 @@ def over_16_check(date_of_birth, delivery_date):
        (delivery_datetime.month == birth_datetime.month and delivery_datetime.day < birth_datetime.day):
         age -= 1
 
-    return age > 16
+    return age >= 16
 
 def calculate_age(DOB, DOV):
 
