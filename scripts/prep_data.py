@@ -61,7 +61,7 @@ if not os.path.isfile(sys.argv[4]):
 # READ IN DATA
 # =============================================================================
 
-# Read vaccination file
+# Read client vaccination file
 path_vax = sys.argv[1]
 df = pd.read_csv(path_vax, sep = ";")
 
@@ -74,6 +74,11 @@ with open(path_config, 'r') as f:
 path_disease_map = sys.argv[3]
 with open (path_disease_map, 'r') as f:
     disease_map = json.load(f)
+
+# Read in vaccine reference file
+path_vaccine_ref = sys.argv[4]
+with open (path_vaccine_ref, 'r') as f:
+    vaccine_ref = json.load(f)
 
 # =============================================================================
 # DATA CHECKS
