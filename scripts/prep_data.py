@@ -162,6 +162,7 @@ for index, row in df.iterrows():
     matches = re.findall(r'\w{3} \d{1,2}, \d{4} - [^,]+', row.Received_Agents)
     
     for match in matches:
+        # FIXME - The output in structured_entries should compress the date and age such that the vaccines and diseases for a given age and date are within in a single entry.
         date_str, vaccine = match.split(' - ')
 
         # Remove vaccines or agents that appear in the yaml/config file
