@@ -151,8 +151,6 @@ for index, row in df.iterrows():
 
     matches = re.findall(r'\w{3} \d{1,2}, \d{4} - [^,]+', row.Received_Agents)
     
-    # Create a list of diseases that the client has recieved using the vaccine referene json file.
-
     for match in matches:
         date_str, vaccine = match.split(' - ')
 
@@ -160,12 +158,16 @@ for index, row in df.iterrows():
         if vaccine in list(ignore_agents):
             break
         else:
+            # Create a list of diseases that the client has recieved using the vaccine referene json file.
+            diseases = vaccine_ref.get(vaccine, vaccine)
+
             structured_entries.append({
-                'date': date_str.strip(),
+                'date_given': date_str.strip(),
                 'vaccine': vaccine.strip(),
-                'client_id': row.Client_ID,
-                'date_of_birth':row.Date_of_Birth,
-                'age':calculate_age(row.Date_of_Birth, date_str)
+                'age':calculate_age(row.Date_of_Birth, date_str),
+                'diseases': diseases
             })
+            # Append the structured entry to the client's received list
+            notices[client_id]["recieved"].append(structured_entries[-1])
 
 print(notices)
