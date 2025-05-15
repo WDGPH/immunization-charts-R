@@ -1,7 +1,7 @@
 # Parameters
 
 # Name of output folder which will be updated dynamically in the script
-output_folder: "demo-output-{{timestamp}}"  
+output_folder: "demo-output-"  
 
 # Diseases, in order, to include immunization history chart
 # Mark as 'F' to collapse the disease into the 'Other' column
