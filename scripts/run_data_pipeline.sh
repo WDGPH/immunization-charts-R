@@ -129,3 +129,23 @@ echo "Processing and transforming ENGLISH data from excel to structure json..."
 echo ""
 echo ""
 
+mkdir -p "${OUTDIR}/english_json"
+echo "" 
+echo ""
+echo "Created directory ${OUTDIR}/english_json"
+echo ""
+echo ""
+
+for i in `ls ${OUTDIR}/by_language_school/`
+do
+    if [[ $i == *"English"* ]]; then
+        echo "Processing: $i"
+        python prep_data.py "${OUTDIR}/by_language_school/${i}" "../config/parameters.yaml" "../config/disease_map.json" "../input/vaccine_reference.json"
+    fi
+done
+
+echo ""
+echo ""
+echo "Processing and transforming FRENCH data from excel to structure json..."
+echo ""
+echo ""
