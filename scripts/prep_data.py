@@ -116,9 +116,8 @@ for index, row in df.iterrows():
         mapped = disease_map.get(vax_to_compare, vax_to_compare)
         vaccines_due_updated.append(mapped)
     
-    # # Replace col based on mapped values 
-    # # First convert it into a string
-    # # FIXME - should there be a comma after the last disease? 
+    # Replace col based on mapped values 
+    # First convert it into a string
     vaccines_due_str = ', '.join(str(e) for e in vaccines_due_updated)
 
     # Check if the client is over 16 years old

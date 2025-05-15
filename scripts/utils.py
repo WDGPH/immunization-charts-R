@@ -7,17 +7,17 @@ def over_16_check(date_of_birth, delivery_date):
 
     Parameters:
         date_of_birth (str): Date of birth in the format "YYYY-MM-DD".
-        delivery_date (str): Date of visit in the format "Mon DD, YYYY" (e.g., "May 8, 2025").
+        delivery_date (str): Date of visit in the format "YYYY-MM-DD".
 
     Returns:
         bool: True if age is over 16 years, False otherwise.
     
     Example:
-        over_16_check("2009-09-08", "May 8, 2025") -> False
+        over_16_check("2009-09-08", "2025-05-08") -> False
     """
 
     birth_datetime = datetime.strptime(date_of_birth, "%Y-%m-%d")
-    delivery_datetime = datetime.strptime(delivery_date, "%b %d, %Y")
+    delivery_datetime = datetime.strptime(delivery_date, "%Y-%m-%d")
 
     age = delivery_datetime.year - birth_datetime.year
 
