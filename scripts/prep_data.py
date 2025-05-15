@@ -144,6 +144,9 @@ for index, row in df.iterrows():
     # Store the client ID in the notices dictionary 
     client_id = row.Client_ID
 
+    # Reformat school name - remove underscores and replace with spaces
+    row.School = row.School.replace("_", " ")
+
     # Store the client information in the notices dictionary
     notices[client_id]["name"] = row.First_Name + " " + row.Last_Name
     notices[client_id]["school"] = row.School
