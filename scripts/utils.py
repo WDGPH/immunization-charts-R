@@ -1,6 +1,33 @@
 import typst
 from datetime import datetime
 
+def over_16_check(date_of_birth, delivery_date):
+    """
+    Check if the age is over 16 years.
+
+    Parameters:
+        date_of_birth (str): Date of birth in the format "YYYY-MM-DD".
+        delivery_date (str): Date of visit in the format "Mon DD, YYYY" (e.g., "May 8, 2025").
+
+    Returns:
+        bool: True if age is over 16 years, False otherwise.
+    
+    Example:
+        over_16_check("2009-09-08", "May 8, 2025") -> False
+    """
+
+    birth_datetime = datetime.strptime(date_of_birth, "%Y-%m-%d")
+    delivery_datetime = datetime.strptime(delivery_date, "%b %d, %Y")
+
+    age = delivery_datetime.year - birth_datetime.year
+
+    # Adjust if birthday hasn't occurred yet in the DOV month
+    if (delivery_datetime.month < birth_datetime.month) or \
+       (delivery_datetime.month == birth_datetime.month and delivery_datetime.day < birth_datetime.day):
+        age -= 1
+
+    return age > 16
+
 def calculate_age(DOB, DOV):
 
     """
