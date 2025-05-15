@@ -21,7 +21,7 @@ Input:
 import pandas as pd
 import sys
 import re
-from utils import calculate_age, over_16_check, convert_date
+from utils import calculate_age, over_16_check, convert_date_iso, convert_date_string
 import yaml
 import json
 from collections import defaultdict
@@ -150,7 +150,7 @@ for index, row in df.iterrows():
     # Store the client information in the notices dictionary
     notices[client_id]["name"] = row.First_Name + " " + row.Last_Name
     notices[client_id]["school"] = row.School
-    notices[client_id]["date_of_birth"] = row.Date_of_Birth
+    notices[client_id]["date_of_birth"] = convert_date_string(row.Date_of_Birth)
     notices[client_id]["address"] = row.Street_Address
     notices[client_id]["city"] = row.City
     notices[client_id]["postal_code"] = row.Postal_Code
@@ -172,7 +172,7 @@ for index, row in df.iterrows():
             diseases = vaccine_ref.get(vaccine, vaccine)
 
             structured_entries.append({
-                'date_given': convert_date(date_str.strip()),
+                'date_given': convert_date_iso(date_str.strip()),
                 'vaccine': vaccine.strip(),
                 'age':calculate_age(row.Date_of_Birth, date_str),
                 'diseases': diseases

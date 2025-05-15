@@ -1,7 +1,24 @@
 import typst
 from datetime import datetime
 
-def convert_date(date_str):
+def convert_date_string(date_str):
+    """
+    Convert a date string from "YYYY-MM-DD" format to "Mon DD, YYYY".
+
+    Parameters:
+        date_str (str): Date in the format "YYYY-MM-DD" (e.g., "2025-05-08").
+    
+    Returns:
+        str: Date in the format "Mon DD, YYYY".
+
+    Example:
+        convert_date_string("2025-05-08") -> "May 8, 2025"
+    """
+
+    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+    return date_obj.strftime("%b %d, %Y")
+
+def convert_date_iso(date_str):
     """
     Convert a date string from "Mon DD, YYYY" format to "YYYY-MM-DD".
 
