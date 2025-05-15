@@ -21,7 +21,7 @@ Input:
 import pandas as pd
 import sys
 import re
-from utils import calculate_age, over_16_check
+from utils import calculate_age, over_16_check, convert_date
 import yaml
 import json
 from collections import defaultdict
@@ -169,7 +169,7 @@ for index, row in df.iterrows():
             diseases = vaccine_ref.get(vaccine, vaccine)
 
             structured_entries.append({
-                'date_given': date_str.strip(),
+                'date_given': convert_date(date_str.strip()),
                 'vaccine': vaccine.strip(),
                 'age':calculate_age(row.Date_of_Birth, date_str),
                 'diseases': diseases
