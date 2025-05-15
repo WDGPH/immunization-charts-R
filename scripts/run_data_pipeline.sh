@@ -87,11 +87,11 @@ echo "Separating files by language"
 echo ""
 echo ""
 
-mkdir -p "${OUTDIR}/by_language"
+mkdir -p "${OUTDIR}/by_language_school"
 
 echo ""
 echo ""
-echo "Created directory ${OUTDIR}/by_language"
+echo "Created directory ${OUTDIR}/by_language_school"
 echo ""
 echo ""
 
@@ -113,7 +113,7 @@ do
         }
         NR==1 {header = $0; next}
         $1 == lang {
-        file = "'${OUTDIR}'/by_language/" lang "_" basefile ".csv";
+        file = "'${OUTDIR}'/by_language_school/" lang "_" basefile ".csv";
         if (!(file in seen)) {
             print header > file;
             seen[file]
@@ -125,14 +125,7 @@ done
 
 echo ""
 echo ""
-echo "Separating English records into batches of 100"
+echo "Processing and transforming ENGLISH data from excel to structure json..."
 echo ""
 echo ""
 
-
-
-echo ""
-echo ""
-echo "Separating French records into batches of 100"
-echo ""
-echo ""
