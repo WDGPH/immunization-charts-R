@@ -21,7 +21,6 @@ Input:
 import pandas as pd
 import sys
 import re
-from datetime import date
 from utils import calculate_age, over_16_check
 import yaml
 import json
@@ -33,8 +32,8 @@ import os
 # =============================================================================
 
 # Check to see if correct number of system arguments   
-if len(sys.argv) != 5:
-    print("Usage: python prep_data.py <client_vaccination_file> <config_file> <disease_map_file> <vaccine_reference_file>")
+if len(sys.argv) != 6:
+    print("Usage: python prep_data.py <client_vaccination_file> <config_file> <disease_map_file> <vaccine_reference_file> <outdir>")
     sys.exit(1)
 
 # Check to see if the client vaccination file exists
@@ -55,6 +54,11 @@ if not os.path.isfile(sys.argv[3]):
 # Check to see if the vaccine reference file exists
 if not os.path.isfile(sys.argv[4]):
     print(f"Vaccine reference file {sys.argv[4]} does not exist.")
+    sys.exit(1)
+
+# Check to see if the output directory exists
+if not os.path.exists(sys.argv[5]):
+    print(f"Output directory {sys.argv[5]} does not exist.")
     sys.exit(1)
 
 # =============================================================================
@@ -79,6 +83,9 @@ with open (path_disease_map, 'r') as f:
 path_vaccine_ref = sys.argv[4]
 with open (path_vaccine_ref, 'r') as f:
     vaccine_ref = json.load(f)
+
+# Read in output directory
+outdir = sys.argv[5]
 
 # =============================================================================
 # DATA CHECKS
@@ -170,4 +177,16 @@ for index, row in df.iterrows():
             # Append the structured entry to the client's received list
             notices[client_id]["recieved"].append(structured_entries[-1])
 
-print(notices)
+# =============================================================================
+# OUTPUT
+# =============================================================================
+
+# Convert the defaultdict to a regular dictionary for easier handling
+notices = dict(notices)
+
+# Save the structured data to a JSON file
+filename = os.path.basename(path_vax)[:-4]
+output_path = outdir + '/' + filename + "_structured.json"
+with open(output_path, 'w') as f:
+    json.dump(notices, f, indent=4)
+print(f"Structured data saved to {output_path}")
