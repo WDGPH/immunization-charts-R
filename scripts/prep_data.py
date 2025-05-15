@@ -1,3 +1,18 @@
+"""
+Script name: prep_data.py
+Description: This script prepares the data for the immunization notice template. It reads in a vaccination file, a config file, and a disease map file. It checks the data for expected columns, processes the data, and outputs a structured dictionary of client information and vaccination records.
+
+Author: Kassy Raymond
+Created: 2025-05-15
+Last modified: 2025-05-15
+
+Usage: python prep_data.py <vaccination_file> <config_file> <disease_map_file>
+Input:
+    - vaccination_file: CSV file containing vaccination data with columns such as Client_ID, First_Name, Last_Name, Date_of_Birth, Street_Address, City, Postal_Code, Province, Vaccines_Due, Received_Agents.
+    - config_file: YAML file containing configuration settings such as expected columns, ignore agents, delivery date, and data date.
+    - disease_map_file: JSON file mapping vaccine names to common names.
+"""
+
 import pandas as pd
 import sys
 import re
@@ -42,18 +57,18 @@ path_disease_map = sys.argv[3]
 with open (path_disease_map, 'r') as f:
     disease_map = json.load(f)
 
-# Take info out of config file
-expected_columns = data['expected_columns']
-ignore_agents = data['ignore_agents']
-delivery_date = data['delivery_date']
-
 # Conduct checks of the data using yaml file...
 # Check to see if the expected columns in the df match what is in the yaml
+expected_columns = data['expected_columns']
 if expected_columns != list(df.columns):
     print(f"Column mismatch. \nExpected {expected_columns}.\nFound: {list(df.columns)}")
     sys.exit(1)
 
-print(expected_columns)
+# Take info out of config file
+ignore_agents = data['ignore_agents']
+delivery_date = data['delivery_date']
+data_date = data['data_date']
+
 
 # Create default dictionary for restructuring data
 notices = defaultdict(lambda: {
