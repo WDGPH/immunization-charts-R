@@ -13,6 +13,10 @@ Input:
     - disease_map_file: JSON file mapping vaccine names to common names.
 """
 
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
 import pandas as pd
 import sys
 import re
@@ -22,6 +26,10 @@ import yaml
 import json
 from collections import defaultdict
 import os
+
+# =============================================================================
+# SYSTEM ARGUMENT CHECKS
+# =============================================================================
 
 # Check to see if correct number of system arguments   
 if len(sys.argv) != 4:
@@ -43,6 +51,10 @@ if not os.path.isfile(sys.argv[3]):
     print(f"Disease map file {sys.argv[3]} does not exist.")
     sys.exit(1)
 
+# =============================================================================
+# READ IN DATA
+# =============================================================================
+
 # Read vaccination file
 path_vax = sys.argv[1]
 df = pd.read_csv(path_vax, sep = ";")
@@ -57,6 +69,10 @@ path_disease_map = sys.argv[3]
 with open (path_disease_map, 'r') as f:
     disease_map = json.load(f)
 
+# =============================================================================
+# DATA CHECKS
+# =============================================================================
+
 # Conduct checks of the data using yaml file...
 # Check to see if the expected columns in the df match what is in the yaml
 expected_columns = data['expected_columns']
@@ -64,15 +80,22 @@ if expected_columns != list(df.columns):
     print(f"Column mismatch. \nExpected {expected_columns}.\nFound: {list(df.columns)}")
     sys.exit(1)
 
+# =============================================================================
+# DATA PROCESSING AND TRANSFORMATION
+# =============================================================================
+
+# Rename columns (remove spaces) for further processing...
+df.columns = df.columns.str.replace(' ', '_')
+
 # Take info out of config file
 ignore_agents = data['ignore_agents']
 delivery_date = data['delivery_date']
 data_date = data['data_date']
 
-
 # Create default dictionary for restructuring data
 notices = defaultdict(lambda: {
     "name": "",
+    "school": "",
     "date_of_birth": "",
     "age": "",
     "over_16": "",
@@ -80,11 +103,10 @@ notices = defaultdict(lambda: {
     "recieved": []
 })
 
-# Rename columns (remove spaces) for further processing...
-df.columns = df.columns.str.replace(' ', '_')
-
+# Create a list to hold structured entries for the received agents
 structured_entries = []
 
+# Loop through the dataframe and process each row
 for index, row in df.iterrows():
 
     # Replace vaccines due with common name found in disease map 
@@ -98,14 +120,16 @@ for index, row in df.iterrows():
     # # First convert it into a string
     # # FIXME - should there be a comma after the last disease? 
     vaccines_due_str = ', '.join(str(e) for e in vaccines_due_updated)
-    df.at[index, 'Vaccines_Due'] = vaccines_due_str
 
     # Check if the client is over 16 years old
     over_16 = over_16_check(row.Date_of_Birth, delivery_date)
 
+    # Store the client ID in the notices dictionary 
     client_id = row.Client_ID
 
+    # Store the client information in the notices dictionary
     notices[client_id]["name"] = row.First_Name + " " + row.Last_Name
+    notices[client_id]["school"] = row.School
     notices[client_id]["date_of_birth"] = row.Date_of_Birth
     notices[client_id]["address"] = row.Street_Address
     notices[client_id]["city"] = row.City
@@ -113,7 +137,7 @@ for index, row in df.iterrows():
     notices[client_id]["province"] = row.Province
     notices[client_id]["over_16"] = over_16
     notices[client_id]["age"] = calculate_age(row.Date_of_Birth, "Apr 8, 2025")
-    notices[client_id]["vaccines_due"] = vaccines_due_str
+    notices[client_id]["vaccines_due"] = vaccines_due_str.rstrip(", ")
 
     matches = re.findall(r'\w{3} \d{1,2}, \d{4} - [^,]+', row.Received_Agents)
     
