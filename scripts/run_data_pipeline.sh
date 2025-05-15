@@ -140,7 +140,7 @@ for i in `ls ${OUTDIR}/by_language_school/`
 do
     if [[ $i == *"English"* ]]; then
         echo "Processing: $i"
-        python prep_data.py "${OUTDIR}/by_language_school/${i}" "../config/parameters.yaml" "../config/disease_map.json" "../input/vaccine_reference.json"
+        python prep_data.py "${OUTDIR}/by_language_school/${i}" "../config/parameters.yaml" "../config/disease_map.json" "../input/vaccine_reference.json" "${OUTDIR}/english_json"
     fi
 done
 
@@ -161,7 +161,7 @@ for i in `ls ${OUTDIR}/by_language_school/`
 do
     if [[ $i == *"French"* ]]; then
         echo "Processing: $i"
-        python prep_data.py "${OUTDIR}/by_language_school/${i}" "../config/parameters.yaml" "../config/disease_map.json" "../input/vaccine_reference.json"
+        python prep_data.py "${OUTDIR}/by_language_school/${i}" "../config/parameters.yaml" "../config/disease_map.json" "../input/vaccine_reference.json" "${OUTDIR}/french_json"
     fi
 done
 
