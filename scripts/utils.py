@@ -1,6 +1,22 @@
 import typst
 from datetime import datetime
 
+def convert_date(date_str):
+    """
+    Convert a date string from "Mon DD, YYYY" format to "YYYY-MM-DD".
+
+    Parameters:
+        date_str (str): Date in the format "Mon DD, YYYY" (e.g., "May 8, 2025").
+
+    Returns:
+        str: Date in the format "YYYY-MM-DD".
+
+    Example:
+        convert_date("May 8, 2025") -> "2025-05-08"
+    """
+    date_obj = datetime.strptime(date_str, "%b %d, %Y")
+    return date_obj.strftime("%Y-%m-%d")
+
 def over_16_check(date_of_birth, delivery_date):
     """
     Check if the age is over 16 years.
