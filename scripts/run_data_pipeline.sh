@@ -1,4 +1,5 @@
 #!/bin/bash
+START=$(date +%s)
 
 INDIR=${1}
 INFILE=${2}
@@ -170,3 +171,7 @@ echo ""
 echo "Data processing complete. The json files are located in the ${OUTDIR}/english_json and ${OUTDIR}/french_json directories."
 echo ""
 echo ""
+
+END=$(date +%s)
+DIFF=$(( $END - $START ))
+echo "Total time taken: $DIFF seconds"
