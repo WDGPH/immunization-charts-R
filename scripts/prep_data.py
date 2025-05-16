@@ -4,7 +4,7 @@ Description: This script prepares the data for the immunization notice template.
 
 Author: Kassy Raymond
 Created: 2025-05-15
-Last modified: 2025-05-15
+Last modified: 2025-05-16
 
 Usage: python prep_data.py <vaccination_file> <config_file> <disease_map_file> <vaccine_reference_file>
 Input:
@@ -161,25 +161,75 @@ for index, row in df.iterrows():
 
     matches = re.findall(r'\w{3} \d{1,2}, \d{4} - [^,]+', row.Received_Agents)
     
-    for match in matches:
+    num_matches = len(matches)
+
+    i = 0
+    while i < num_matches:
+    # for i in range(0, num_matches):
+        print(i)
         # FIXME - The output in structured_entries should compress the date and age such that the vaccines and diseases for a given age and date are within in a single entry.
-        date_str, vaccine = match.split(' - ')
+        date_str, vaccine = matches[i].split(' - ')
+
+        # Get the next date string
+        next_date_str = matches[i + 1].split(' - ')[0] if i + 1 < num_matches else None
+
+        print(date_str)
+
+        # Modify the date string
+        date_str = date_str.strip()
+        next_date_str = next_date_str.strip() if next_date_str else None
 
         # Remove vaccines or agents that appear in the yaml/config file
         if vaccine in list(ignore_agents):
             break
         else:
             # Create a list of diseases that the client has received using the vaccine referene json file.
-            diseases = vaccine_ref.get(vaccine, vaccine)
+            
+            # Check if the date_str and next_date_str are the same
+            if date_str == next_date_str:
 
-            structured_entries.append({
-                'date_given': convert_date_iso(date_str.strip()),
-                'vaccine': vaccine.strip(),
-                'age':calculate_age(row.Date_of_Birth, date_str),
-                'diseases': diseases
-            })
-            # Append the structured entry to the client's received list
-            notices[client_id]["received"].append(structured_entries[-1])
+                next_vax = matches[i + 1].split(' - ')[1] if i + 1 < num_matches else None
+                vax_list = []
+                disease_list = []
+                vax_list.append(vaccine.strip())
+                vax_list.append(next_vax.strip())
+
+                # Get the diseases for the current and next vaccine
+                for vax in vax_list:
+                    disease = vaccine_ref.get(vax, vax)
+                    disease_list.append(disease)
+
+                # Handle diseases for the current and next vaccine
+                disease_list_flattened = [item for sublist in disease_list for item in sublist]
+                # If they are the same, collect the vaccine and diseases from both dates
+                # and add them to the structured_entries list
+                
+                structured_entries.append({
+                    'date_given': convert_date_iso(date_str),
+                    'vaccine': vax_list,
+                    'age': calculate_age(row.Date_of_Birth, date_str),
+                    'diseases': disease_list_flattened
+                })
+                
+                i+=1
+                # Append the structured entry to the client's received list
+                notices[client_id]["received"].append(structured_entries[-1])
+
+            else:
+                # If they are different, just collect the vaccine and diseases from the current date
+                # and add them to the structured_entries list
+                disease = vaccine_ref.get(vaccine, vaccine)
+                structured_entries.append({
+                    'date_given': convert_date_iso(date_str),
+                    'vaccine': vaccine.strip(),
+                    'age':calculate_age(row.Date_of_Birth, date_str),
+                    'diseases': disease
+                })
+
+                # Append the structured entry to the client's received list
+                notices[client_id]["received"].append(structured_entries[-1])
+
+        i += 1
 
 # =============================================================================
 # OUTPUT
