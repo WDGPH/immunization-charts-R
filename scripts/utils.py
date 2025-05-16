@@ -78,7 +78,17 @@ def calculate_age(DOB, DOV):
     """
 
     DOB_datetime = datetime.strptime(DOB, "%Y-%m-%d")
-    DOV_datetime = datetime.strptime(DOV, "%b %d, %Y")
+
+    # Check for the format of DOV
+    if DOV[0].isdigit():
+        # If DOV is in "YYYY-MM-DD" format
+        DOV_datetime = datetime.strptime(DOV, "%Y-%m-%d")
+    else:
+        # If DOV is in "Mon DD, YYYY" format
+        # Convert to "YYYY-MM-DD" first
+        DOV_datetime = datetime.strptime(DOV, "%b %d, %Y")
+        # Convert to "YYYY-MM-DD"
+        DOV = DOV_datetime.strftime("%Y-%m-%d")
 
     years = DOV_datetime.year - DOB_datetime.year
     months = DOV_datetime.month - DOB_datetime.month
