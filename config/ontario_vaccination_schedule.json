@@ -1,0 +1,65 @@
+{
+    "2_months": [
+      "diphtheria",
+      "tetanus",
+      "pertussis",
+      "polio",
+      "haemophilus influenza type b",
+      "pneumococcal conjugate",
+      "rotavirus"
+    ],
+    "4_months": [
+      "diphtheria",
+      "tetanus",
+      "pertussis",
+      "polio",
+      "haemophilus influenza type b",
+      "pneumococcal conjugate",
+      "rotavirus"
+    ],
+    "6_months": [
+      "diphtheria",
+      "tetanus",
+      "pertussis",
+      "polio",
+      "haemophilus influenza type b"
+    ],
+    "12_months": [
+      "pneumococcal conjugate",
+      "meningococcal conjugate (Men-C-C)",
+      "measles",
+      "mumps",
+      "rubella"
+    ],
+    "15_months": [
+      "chickenpox (varicella)"
+    ],
+    "18_months": [
+      "diphtheria",
+      "tetanus",
+      "pertussis",
+      "polio",
+      "haemophilus influenza type b"
+    ],
+    "4_to_6_years": [
+        "tetanus",
+        "diphtheria",
+        "pertussis",
+        "polio",
+        "measles",
+        "mumps",
+        "rubella",
+        "chickenpox"
+      ],
+      "10_to_12_years": [
+        "meningococcal conjugate (Men-C-ACYW)",
+        "hepatitis b",
+        "human papillomavirus (HPV)"
+      ],
+      "14_to_16_years": [
+        "tetanus",
+        "diphtheria",
+        "pertussis"
+      ]
+  }
+  
