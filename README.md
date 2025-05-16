@@ -2,40 +2,36 @@
 
 ## 📘 Introduction
 
-This project provides a Python-based workflow for generating personalized immunization history charts and notice letters for children who are overdue for mandated vaccinations under the **Immunization of School Pupils Act (ISPA)** or the **Child Care and Early Years Act (CCEYA)**. Reports are generated in PDF format using [Typst](https://typst.app) and a custom report template.
+This project provides a Python and bash-based workflow for generating personalized immunization history charts and notice letters for children who are overdue for mandated vaccinations under the **Immunization of School Pupils Act (ISPA)** or the **Child Care and Early Years Act (CCEYA)**. 
+Reports are generated in PDF format using [Typst](https://typst.app) and a custom report template.
 
 ---
 
 ## ⚙️ Usage
 
 ### Environment 
-This project is written in **Python** and uses [Typst](https://typst.app) for typesetting. All dependencies are managed via a `pyproject.toml` file. 
+This project is written in **bash** and **Python**, and uses [Typst](https://typst.app) for typesetting. 
+
+All dependencies are managed via a `pyproject.toml` file. 
 
 ### Data
 This project is intended to be used with data extracts from [Panorama PEAR](https://accessonehealth.ca/).
 
-Input files, in `xlsx` format should be organized in a subfolder `input` (out of caution, input and output folders are `.gitignore`d, and need to be recreated by the user). Each `xlsx` file should be a single sheet with the following columns:
-- `Language`
-- `School`
-- `Client ID`
-- `First Name`
-- `Last Name`
-- `Date of Birth`
-- `Street Address`
-- `City`
-- `Province`
-- `Postal Code`
-- `Vaccines Due`
-- `Received Agents`
+Input files, in `xlsx` format should be organized in a subfolder `input` (out of caution, input and output folders are `.gitignore`d, and need to be recreated by the user). Each `xlsx` file should be a single sheets. 
 
-In case of large cohorts, it may be helpful to have `xlsx` exports from Panorama PEAR batched by client birth year. 
+### Parameters 
+The `parameters.yaml` file is specific to each run. 
 
-`Language` should be set to either `French` or `English` for each client.
+The following can be modified based on the specifics of what should be included in the immunization reports: 
 
-`Received Agents` is a string representation of the immunization history. To create this immunization history string, a "Repeater" Data Container must be used in the Panorama PEAR report builder. The repeater will be formatted as:
-1. `[PresentationView].[Immunization Received].[Date Administered]`
-2. Text box with space, dash, and a space (` - `)
-3. `[PresentationView].[Immunization Received].[Immunizing Agent]`
+* output_folder: name of the output folder which will be updated dynamically in the script
+* expected_columns: columns that ar eexpected in the input file
+* chart_diseases: vaccines or agents that should occur in the template for the chart
+* ignore_agents: vaccines or agents to ignore in/drop from immunization history
+* delivery_date: date at time of mail delivery. This is used to calculate the student age at the time of mail delivery. Letters for students under 16 should be addressed to their parent/guardian
+* data_date: to include in notice text as date that immunization history is reflective of
+* min_rows: minimum number of rows to show in immunization history chart
+* batch_size: number of clients to include in a single PDF
 
 ### Functionality 
 Functionality remains a work in progress but this is how things work so far...
@@ -56,8 +52,4 @@ The script:
 * An `awk` script is ran to separate the file into schools, naming each output file according to school. 
 * A directory is created in the specified output directory to hold the data once it is split by language (English or French).
 * An `awk` script is ran to separate each school file by language, naming each output file according to school and language in the created directory.
-
-*Functionality to be added* includes adding the prep_data script to the shell pipeline.
-
-Currently in progress is prep_data.py which can be run: 
-`python prep_data.py ../output/by_language/English_Double_Double_High_School.csv  ../config/parameters.yaml ../config/disease_map.json`
+* Data is then processed using the `prep_data.py` script. A json file is produced for each file in the `by_language_school` directory. New directories are created for the output json files for both English and French.
