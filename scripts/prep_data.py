@@ -160,87 +160,139 @@ for index, row in df.iterrows():
     notices[client_id]["vaccines_due"] = vaccines_due_str.rstrip(", ")
 
     matches = re.findall(r'\w{3} \d{1,2}, \d{4} - [^,]+', row.Received_Agents)
-    
+
     num_matches = len(matches)
+    
+    j = 0
+    vax_date = []
 
-    i = 0
-    while i < num_matches:
-    # for i in range(0, num_matches):
-        print(i)
-        # FIXME - The output in structured_entries should compress the date and age such that the vaccines and diseases for a given age and date are within in a single entry.
-        date_str, vaccine = matches[i].split(' - ')
+    while j < num_matches:
 
-        # Get the next date string
-        next_date_str = matches[i + 1].split(' - ')[0] if i + 1 < num_matches else None
-
-        print(date_str)
-
-        # Modify the date string
+        date_str, vaccine = matches[j].split(' - ')
         date_str = date_str.strip()
-        next_date_str = next_date_str.strip() if next_date_str else None
+
+        # Change format of date string to YYYY-MM-DD
+        date_str = convert_date_iso(date_str)
 
         # Remove vaccines or agents that appear in the yaml/config file
         if vaccine in list(ignore_agents):
             break
         else:
             # Create a list of diseases that the client has received using the vaccine referene json file.
-            
-            # Check if the date_str and next_date_str are the same
-            if date_str == next_date_str:
+            disease = vaccine_ref.get(vaccine, vaccine)
+            # Append the date and vaccine to the vax_date list
+            vax_date.append([date_str, vaccine.strip()])
 
-                next_vax = matches[i + 1].split(' - ')[1] if i + 1 < num_matches else None
-                vax_list = []
-                disease_list = []
-                vax_list.append(vaccine.strip())
-                vax_list.append(next_vax.strip())
+        j+=1
 
-                # Get the diseases for the current and next vaccine
-                for vax in vax_list:
-                    disease = vaccine_ref.get(vax, vax)
-                    disease_list.append(disease)
+    # Sort the vax_date list by date
+    vax_date.sort(key=lambda x: x[0])
 
-                # Handle diseases for the current and next vaccine
-                disease_list_flattened = [item for sublist in disease_list for item in sublist]
-                # If they are the same, collect the vaccine and diseases from both dates
-                # and add them to the structured_entries list
-                
-                structured_entries.append({
-                    'date_given': convert_date_iso(date_str),
-                    'vaccine': vax_list,
-                    'age': calculate_age(row.Date_of_Birth, date_str),
-                    'diseases': disease_list_flattened
-                })
-                
-                i+=1
-                # Append the structured entry to the client's received list
-                notices[client_id]["received"].append(structured_entries[-1])
+    i = 0
+    while i < len(vax_date):
+        print(i)
 
-            else:
-                # If they are different, just collect the vaccine and diseases from the current date
-                # and add them to the structured_entries list
-                disease = vaccine_ref.get(vaccine, vaccine)
-                structured_entries.append({
-                    'date_given': convert_date_iso(date_str),
-                    'vaccine': vaccine.strip(),
-                    'age':calculate_age(row.Date_of_Birth, date_str),
-                    'diseases': disease
-                })
+        vax_list = []
 
-                # Append the structured entry to the client's received list
-                notices[client_id]["received"].append(structured_entries[-1])
+        date_str, vaccine = vax_date[i]
 
+        vax_list.append(vaccine)
+
+        for j in range(i + 1, len(vax_date)):
+
+
+            # Check for matching dates
+            date_str_next, vaccine_next = vax_date[j]
+
+            if date_str == date_str_next:
+
+                vax_list.append(vaccine_next)
+
+                i += 1
+        print("Matching dates found:")
+        print(f"Date: {date_str}, Vaccines: {vax_list}")
         i += 1
 
-# =============================================================================
-# OUTPUT
-# =============================================================================
+       # print(vax_list)
+#     while i < len_vax_date:
 
-# Convert the defaultdict to a regular dictionary for easier handling
-notices = dict(notices)
+#         # Check to see how many matching dates there are 
+#         date_str, vaccine = vax_date[i]
 
-# Save the structured data to a JSON file
-filename = os.path.basename(path_vax)[:-4]
-output_path = outdir + '/' + filename + "_structured.json"
-with open(output_path, 'w') as f:
-    json.dump(notices, f, indent=4)
-print(f"Structured data saved to {output_path}")
+#         date_str, vaccine = matches[i].split(' - ')
+
+#         # Get the next date string
+#         next_date_str = matches[i + 1].split(' - ')[0] if i + 1 < num_matches else None
+
+#         print(date_str)
+
+#         # Modify the date string
+#         date_str = date_str.strip()
+#         next_date_str = next_date_str.strip() if next_date_str else None
+
+#         # Remove vaccines or agents that appear in the yaml/config file
+#         if vaccine in list(ignore_agents):
+#             break
+#         else:
+#             # Create a list of diseases that the client has received using the vaccine referene json file.
+            
+#             # Check if the date_str and any other dates in the list are the same
+
+#             if date_str == next_date_str:
+
+#                 next_vax = matches[i + 1].split(' - ')[1] if i + 1 < num_matches else None
+#                 vax_list = []
+#                 disease_list = []
+#                 vax_list.append(vaccine.strip())
+#                 vax_list.append(next_vax.strip())
+
+#                 # Get the diseases for the current and next vaccine
+#                 for vax in vax_list:
+#                     disease = vaccine_ref.get(vax, vax)
+#                     disease_list.append(disease)
+
+#                 # Handle diseases for the current and next vaccine
+#                 disease_list_flattened = [item for sublist in disease_list for item in sublist]
+#                 # If they are the same, collect the vaccine and diseases from both dates
+#                 # and add them to the structured_entries list
+                
+#                 structured_entries.append({
+#                     'date_given': convert_date_iso(date_str),
+#                     'vaccine': vax_list,
+#                     'age': calculate_age(row.Date_of_Birth, date_str),
+#                     'diseases': disease_list_flattened
+#                 })
+                
+#                 i+=1
+#                 # Append the structured entry to the client's received list
+#                 notices[client_id]["received"].append(structured_entries[-1])
+
+#             else:
+#                 # If they are different, just collect the vaccine and diseases from the current date
+#                 # and add them to the structured_entries list
+#                 disease = vaccine_ref.get(vaccine, vaccine)
+#                 structured_entries.append({
+#                     'date_given': convert_date_iso(date_str),
+#                     'vaccine': vaccine.strip(),
+#                     'age':calculate_age(row.Date_of_Birth, date_str),
+#                     'diseases': disease
+#                 })
+
+#                 # Append the structured entry to the client's received list
+#                 notices[client_id]["received"].append(structured_entries[-1])
+
+#         i += 1
+
+# # =============================================================================
+# # OUTPUT
+# # =============================================================================
+
+# # Convert the defaultdict to a regular dictionary for easier handling
+# notices = dict(notices)
+
+# # Save the structured data to a JSON file
+# filename = os.path.basename(path_vax)[:-4]
+# output_path = outdir + '/' + filename + "_structured.json"
+# with open(output_path, 'w') as f:
+#     json.dump(notices, f, indent=4)
+# print(f"Structured data saved to {output_path}")
