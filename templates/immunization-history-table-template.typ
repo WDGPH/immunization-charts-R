@@ -2,7 +2,7 @@
 // Description: A typst template that dynamically generates immunization history tables.
 // Author: Kassy Raymond
 // Date Created: 2025-05-22
-// Date Last Updated: 2025-05-22
+// Date Last Updated: 2025-05-23
 // ----------------------------------------- //
 
 // Link formatting
@@ -30,27 +30,27 @@
   size: 10pt
 )
 
-// Diseases - FIXME these should actually be read in from the yaml file
-#let diseases =(
-  "Diphtheria",
-  "Tetanus",
-  "Pertussis",
-  "Polio",
-  "Hib",
-  "Pneumococcal",
-  "Rotavirus",
-  "Measles",
-  "Mumps",
-  "Rubella",
-  "Meningococcal",
-  "Varicella",
-  "Hepatitis B",
-  "HPV"
+// Read diseases from yaml file 
+// #let diseases_yaml(contents) = contents.chart_diseases_header
+
+// #let diseases = #diseases_yaml(yaml("parameters.yaml"))
+
+#let diseases = (
+"Diphtheria",
+"Tetanus",
+"Pertussis",
+"Polio",
+"Hib",
+"Pneumococcal",
+"Rotavirus",
+"Measles",
+"Mumps",
+"Rubella",
+"Meningococcal",
+"Varicella",
+"Hepatitis B",
+"HPV"
 )
-
-#let data = json("client_data.json").at("1110246921")
-
-#let received = data.received
 
 #let immunization-table(data, diseases) = {
 
@@ -91,7 +91,7 @@
   // --- Create the table ---
   align(center)[
     #table(
-        columns: (53pt, 42pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 180pt),
+        columns: (57pt, 46pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 190pt),
         table.header(
           [#align(bottom + left)[#text(size: 10pt)[Date Given]]],
           [#align(bottom + left)[#text(size: 10pt)[At Age]]],
@@ -113,10 +113,35 @@
         ),
       stroke: 1pt,
       inset: 5pt,
-      align: center + horizon, 
+      align: (
+        left,
+        left,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        left
+      ), 
       ..table_rows.flatten(), 
     )
   ]
 }
 
-#immunization-table(received, diseases)
+// Read in data from client_ids 
+#let client_ids = csv("client_ids.csv", delimiter: ",", row-type: array)
+
+#for row in client_ids {
+  let value = row.at(0) // Access the first (and only) element of the row
+  let data = json("client_data.json").at(value)
+  let received = data.received
+  immunization-table(received, diseases)
+}
