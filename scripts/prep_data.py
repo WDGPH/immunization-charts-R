@@ -236,11 +236,12 @@ filename = os.path.basename(path_vax)[:-4]
 # Save a list of all client IDs that exist in the notices dictionary
 notices_client_ids = list(notices.keys())
 
-# Output the list of client IDs to a text file
-output_client_ids_path = outdir + '/' + filename + "_client_ids.txt"
-with open(output_client_ids_path, 'w') as f:
-    for client_id in notices_client_ids:
-        f.write(f"{client_id}\n")
+# Create a DataFrame from the list of client IDs
+notices_client_ids = pd.DataFrame(notices_client_ids, columns=["Client_ID"])
+
+# Output the list of client IDs to a csv file
+output_client_ids_path = outdir + '/' + filename + "_client_ids.csv"
+notices_client_ids.to_csv(output_client_ids_path, index=False)
 
 # Convert the defaultdict to a regular dictionary for easier handling
 notices = dict(notices)
