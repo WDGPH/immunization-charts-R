@@ -191,6 +191,25 @@ student, excluding seasonal vaccinations against influenza and COVID-19, has bee
 For more information on immunization exemptions, please visit: #text(fill:wdgteal)[*#link("https://wdgpublichealth.ca/your-kids/vaccination")*]
 ]
 
+#let end_of_immunization_notice() = [
+  #set align(center)
+  End of immunization record
+  
+  
+  
+  
+  #v(0.5cm)
+  
+  // End notice 
+  
+  #set align(left)
+  #set align(bottom)
+  #text(size: 8pt)[
+  The information in this notice was collected under the authority of the _Health Protection and Promotion Act_ in accordance with the _Municipal Freedom of Information and Protection of Privacy Act_ and the _Personal Health Information Protection Act_. This information is used for the delivery of public health programs and services; the administration of the agency; and the maintenance of healthcare databases, registries and related research, in compliance with legal and regulatory requirements. Any questions about the management of this information should be addressed to the Chief Privacy Officer at 1-800-265-7293 ext. 2975 or #link("privacy@wdgpublichealth.ca").]
+
+  #pagebreak()
+
+]
 
 // Read in data from client_ids 
 #let client_ids = csv("client_ids.csv", delimiter: ",", row-type: array)
@@ -207,4 +226,5 @@ For more information on immunization exemptions, please visit: #text(fill:wdgtea
   
   immunization_notice(data, value, vaccines_due_array)
   immunization-table(received, diseases)
+  end_of_immunization_notice()
 }
