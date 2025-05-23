@@ -3,11 +3,15 @@
 //              hyperlinks, and custom styling for headers.
 // Author: Kassy Raymond
 // Date Created: 2025-04-24
-// Date Last Updated: 2025-04-24
+// Date Last Updated: 2025-05-23
 // ----------------------------------------- //
+
 
 // Link formatting
 #show link: underline
+
+// Custom header formatting
+#let header_text_size = 10pt
 
 // General document formatting 
 #set text(fill: black)
@@ -28,7 +32,97 @@
   size: 10pt
 )
 
-#let immunization_notice(client, immunizationsDue) = block[
+// Read diseases from yaml file 
+#let diseases_yaml(contents) = {
+    contents.chart_diseases_header
+}
+  
+#let diseases = diseases_yaml(yaml("parameters.yaml"))
+
+
+#let immunization-table(data, diseases) = {
+
+  // Prepare table rows ---
+  let table_rows = ()
+  for record in data {
+    // Start row with Date Given and At Age
+    let row_cells = (
+      record.date_given,
+      record.age,
+    )
+
+    // Populate disease columns with #vax or empty
+    for disease_name in diseases {
+
+      let cell_content = ""
+      for record_disease in record.diseases {
+        if record_disease == disease_name { 
+          cell_content = vax
+          // Found a match, no need to check other diseases for this cell
+          break 
+        }
+      }
+      row_cells.push(cell_content)
+    }
+
+    // Add the Vaccine(s) column content
+    let vaccine_content = if type(record.vaccine) == array {
+      record.vaccine.join(", ") 
+    } else {
+      record.vaccine
+    }
+    row_cells.push(vaccine_content)
+
+    table_rows.push(row_cells)
+  }
+
+  // Create dynamic headers based on the diseases
+  let dynamic_headers = ()
+
+  dynamic_headers.push([#align(bottom + left)[#text(size: 10pt)[Date Given]]])
+  dynamic_headers.push([#align(bottom + left)[#text(size: 10pt)[At Age]]])
+
+  for disease in diseases {
+    dynamic_headers.push([#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[#disease]]]])
+  }
+
+  dynamic_headers.push([#align(bottom + left)[#text(size: 10pt)[Vaccine(s)]]])
+  
+  // --- Create the table ---
+  align(center)[
+    #table(
+        columns: (57pt, 46pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 190pt),
+        table.header(
+          ..dynamic_headers
+        ),
+      stroke: 1pt,
+      inset: 5pt,
+      align: (
+        left,
+        left,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        left
+      ), 
+      ..table_rows.flatten(), 
+    )
+  ]
+}
+
+
+
+#let immunization_notice(client, client_id, immunizations_due) = block[
 // Begin content
 #align(center)[
 #text(size: 14pt, fill: darkred)[*Bring this notice to your family doctor or healthcare provider*]
@@ -64,9 +158,9 @@
 *#client.city*  ]]
 , 
   [#align(left)[
-    Client ID: #smallcaps[*#client.clientId*]\
+    Client ID: #smallcaps[*#client_id*]\
     \
-    Date of Birth: *#client.dateOfBirth*\
+    Date of Birth: *#client.date_of_birth*\
     \
     School: #smallcaps[*#client.school*]
   ]],
@@ -82,9 +176,7 @@ As of *April 01, 2025* our files show that *#client.name* has not received the f
 
 #v(0.25cm)
 
-#for immunization in immunizationsDue [
-- *#immunization*
-]
+#immunizations_due
 
 
 #v(0.25cm)
@@ -96,62 +188,19 @@ vaccines received to Public Health. For your reference, a record of all immuniza
 student, excluding seasonal vaccinations against influenza and COVID-19, has been included below.
 
 For more information on immunization exemptions, please visit: #text(fill:wdgteal)[*#link("https://wdgpublichealth.ca/your-kids/vaccination")*]
-
-// Table of immunization records
-// Symbol for circle: #sym.circle.filled
-
-#align(center)[
-#table(
-  columns: (53pt, 42pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 180pt),
-  table.header(
-    [#align(bottom + left)[#text(size: 10pt)[Date Given]]],
-    [#align(bottom + left)[#text(size: 10pt)[At Age]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Goblin Fever]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Radioactive Bite]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Parkerosis]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Octo-Flu]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Symbiote Rash]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Arachnopox]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Multiverse Virus]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Webpox]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Stinger Syndrome]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Spider Sense Loss]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Clone Spots]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Venomitis]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Web Wart]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Other]]]],
-    [#align(bottom + left)[#text(size: 10pt)[Vaccine(s)]]],
-  ),
-  [2010-08-10],[#align(left)[#text[0Y 6M]]],[#vax],[#vax],[#vax],[#vax],[#vax],[#vax],[#vax],[],[],[],[],[],[],[],[#align(left)[#text[Webserum-1, Spider-Vax]]],
-  [2010-11-15],[#align(left)[#text[0Y 9M]]],[#vax],[#vax],[#vax],[#vax],[#vax],[#vax],[#vax],[],[],[],[],[],[],[],[#align(left)[#text[Webserum-2, Spider-Vax]]],
-  [2011-05-02],[#align(left)[#text[1Y 3M]]],[#vax],[#vax],[#vax],[#vax],[#vax],[#vax],[#vax],[],[],[],[],[],[],[],[#align(left)[#text[Webserum-3, Spider-Vax]]],
-  [2011-08-12],[#align(left)[#text[1Y 6M]]],[],[],[],[],[],[],[],[#vax],[#vax],[#vax],[#vax],[],[],[],[#align(left)[#text[Spidey-MMR, Men-Sting-C]]],
-  [2011-11-22],[#align(left)[#text[1Y 9M]]],[#vax],[#vax],[#vax],[#vax],[#vax],[],[],[#vax],[#vax],[#vax],[],[],[],[],[#align(left)[#text[Webserum-Booster, Spidey-MMR]]],
-  [2022-11-01],[#align(left)[#text[12Y 3M]]],[],[],[],[],[],[#vax],[],[],[],[],[#vax],[],[],[],[#align(left)[#text[Spider-Pneu-C, Wallcrawl-VAR]]],
-  [2023-06-15],[#align(left)[#text[13Y 0M]]],[#vax],[#vax],[#vax],[#vax],[],[],[],[],[],[],[#vax],[],[],[],[#align(left)[#text[Tingle-Tdap, Wallcrawl-VAR]]],
-  [2024-12-20],[#align(left)[#text[14Y 6M]]],[],[],[],[],[],[],[],[],[],[#vax],[],[#vax],[#vax],[],[#align(left)[#text[Venom-B, Spider-Guard-9]]],
-)]
-
-#set align(center)
-End of immunization record
-
-
-
-
-#v(0.5cm)
-
-// End notice 
-
-#set align(left)
-#set align(bottom)
-#text(size: 8pt)[
-The information in this notice was collected under the authority of the _Health Protection and Promotion Act_ in accordance with the _Municipal Freedom of Information and Protection of Privacy Act_ and the _Personal Health Information Protection Act_. This information is used for the delivery of public health programs and services; the administration of the agency; and the maintenance of healthcare databases, registries and related research, in compliance with legal and regulatory requirements. Any questions about the management of this information should be addressed to the Chief Privacy Officer at 1-800-265-7293 ext. 2975 or #link("privacy@wdgpublichealth.ca").]]
-
-#let clients = json("clients.json")
-
-#for client in clients [
-  
-  #let immunizationsDue = client.immunizationsDue
-  
-  #immunization_notice(client, immunizationsDue)
 ]
+
+
+// Read in data from client_ids 
+#let client_ids = csv("client_ids.csv", delimiter: ",", row-type: array)
+
+#for row in client_ids {
+  let value = row.at(0) // Access the first (and only) element of the row
+  let data = json("client_data.json").at(value)
+  let received = data.received
+
+  let immunizations_due = data.vaccines_due
+
+  immunization_notice(data, value, immunizations_due)
+  immunization-table(received, diseases)
+}
