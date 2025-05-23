@@ -30,27 +30,13 @@
   size: 10pt
 )
 
+
 // Read diseases from yaml file 
-// #let diseases_yaml(contents) = contents.chart_diseases_header
-
-// #let diseases = #diseases_yaml(yaml("parameters.yaml"))
-
-#let diseases = (
-"Diphtheria",
-"Tetanus",
-"Pertussis",
-"Polio",
-"Hib",
-"Pneumococcal",
-"Rotavirus",
-"Measles",
-"Mumps",
-"Rubella",
-"Meningococcal",
-"Varicella",
-"Hepatitis B",
-"HPV"
-)
+#let diseases_yaml(contents) = {
+    contents.chart_diseases_header
+}
+  
+#let diseases = diseases_yaml(yaml("parameters.yaml"))
 
 #let immunization-table(data, diseases) = {
 
