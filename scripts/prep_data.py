@@ -230,11 +230,22 @@ for index, row in df.iterrows():
 # OUTPUT
 # =============================================================================
 
+# Get basename of the vaccination file
+filename = os.path.basename(path_vax)[:-4]
+
+# Save a list of all client IDs that exist in the notices dictionary
+notices_client_ids = list(notices.keys())
+
+# Output the list of client IDs to a text file
+output_client_ids_path = outdir + '/' + filename + "_client_ids.txt"
+with open(output_client_ids_path, 'w') as f:
+    for client_id in notices_client_ids:
+        f.write(f"{client_id}\n")
+
 # Convert the defaultdict to a regular dictionary for easier handling
 notices = dict(notices)
 
 # Save the structured data to a JSON file
-filename = os.path.basename(path_vax)[:-4]
 output_path = outdir + '/' + filename + "_structured.json"
 with open(output_path, 'w') as f:
     json.dump(notices, f, indent=4)
