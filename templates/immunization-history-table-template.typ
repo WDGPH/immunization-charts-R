@@ -30,13 +30,13 @@
   size: 10pt
 )
 
-
 // Read diseases from yaml file 
 #let diseases_yaml(contents) = {
     contents.chart_diseases_header
 }
   
 #let diseases = diseases_yaml(yaml("parameters.yaml"))
+
 
 #let immunization-table(data, diseases) = {
 
@@ -74,28 +74,24 @@
     table_rows.push(row_cells)
   }
 
+  // Create dynamic headers based on the diseases
+  let dynamic_headers = ()
+
+  dynamic_headers.push([#align(bottom + left)[#text(size: 10pt)[Date Given]]])
+  dynamic_headers.push([#align(bottom + left)[#text(size: 10pt)[At Age]]])
+
+  for disease in diseases {
+    dynamic_headers.push([#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[#disease]]]])
+  }
+
+  dynamic_headers.push([#align(bottom + left)[#text(size: 10pt)[Vaccine(s)]]])
+  
   // --- Create the table ---
   align(center)[
     #table(
         columns: (57pt, 46pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 190pt),
         table.header(
-          [#align(bottom + left)[#text(size: 10pt)[Date Given]]],
-          [#align(bottom + left)[#text(size: 10pt)[At Age]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Diptheria]]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Tetanus]]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Pertussis]]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Polio]]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Hib]]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Pneumococcal]]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Rotavirus]]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Measles]]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Mumps]]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Rubella]]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Meningococcal]]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Varicella]]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Hepatitis]]]],
-          [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Other]]]],
-          [#align(bottom + left)[#text(size: 10pt)[Vaccine(s)]]],
+          ..dynamic_headers
         ),
       stroke: 1pt,
       inset: 5pt,
