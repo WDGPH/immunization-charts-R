@@ -6,7 +6,6 @@
 // Date Last Updated: 2025-05-23
 // ----------------------------------------- //
 
-
 // Link formatting
 #show link: underline
 
@@ -176,7 +175,9 @@ As of *April 01, 2025* our files show that *#client.name* has not received the f
 
 #v(0.25cm)
 
-#immunizations_due
+#for vaccine in immunizations_due [
+  - *#vaccine*
+]
 
 
 #v(0.25cm)
@@ -199,8 +200,11 @@ For more information on immunization exemptions, please visit: #text(fill:wdgtea
   let data = json("client_data.json").at(value)
   let received = data.received
 
-  let immunizations_due = data.vaccines_due
+  // get vaccines due, split string into an array of sub strings
+  let vaccines_due = data.vaccines_due
 
-  immunization_notice(data, value, immunizations_due)
+  let vaccines_due_array = vaccines_due.split(", ")
+  
+  immunization_notice(data, value, vaccines_due_array)
   immunization-table(received, diseases)
 }
