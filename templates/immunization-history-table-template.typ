@@ -32,7 +32,7 @@
 // General document formatting 
 #set text(fill: black)
 // #set page(numbering: "1 of 1")
-#set page(margin: (top: 1cm, bottom: 2cm, left: 2cm, right: 2cm))
+// #set page(margin: (top: 1cm, bottom: 2cm, left: 2cm, right: 2cm))
 //footer: align(center, page-numbers))
 #set par(justify: false)
 
@@ -248,7 +248,7 @@ For more information on immunization exemptions, please visit: #text(fill:wdgtea
   let loc = here()
   let list = query(selector(reset).after(loc))
   if list.len() > 0 { 
-    counter(page).at(list.first().location()).first() 
+    counter(page).at(list.first().location()).first() - 1
   } else {
     counter(page).final().first() 
   }
@@ -259,6 +259,9 @@ For more information on immunization exemptions, please visit: #text(fill:wdgtea
   ..counter(page).get(),
   subtotal(),
   )
+
+  set page(margin: (top: 1cm, bottom: 2cm, left: 2cm, right: 2cm),
+  footer: align(center, page-numbers))
 
   let value = row.at(0) // Access the first (and only) element of the row
   let data = json("client_data.json").at(value)
@@ -274,11 +277,9 @@ For more information on immunization exemptions, please visit: #text(fill:wdgtea
     pagebreak(weak: true)
     counter(page).update(1) // Reset page counter for this section
     pagebreak(weak: true)
-    page-numbers
     immunization_notice(data, value, vaccines_due_array)
     immunization-table(received, diseases)
     end_of_immunization_notice()
-    page-numbers
   }
 
   section([] + page-numbers)
