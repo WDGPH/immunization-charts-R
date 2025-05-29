@@ -6,22 +6,22 @@
 // ----------------------------------------- //
 
 // Returns the page total of the current section.
-#let reset = <__reset>
-#let subtotal() = {
-  let loc = here()
-  let list = query(selector(reset).after(loc))
-  if list.len() > 1 { 
-    counter(page).at(list.first().location()).first() - 1
-  } else {
-    counter(page).final().first()
-  }
-}
+// #let reset = <__reset>
+// #let subtotal() = {
+//   let loc = here()
+//   let list = query(selector(reset).after(loc))
+//   if list.len() > 0 { 
+//     counter(page).at(list.first().location()).first() 
+//   } else {
+//     counter(page).final().first() 
+//   }
+// }
 
-#let page-numbers = context numbering(
-  "1 / 1",
-  ..counter(page).get(),
-  subtotal(),
-)
+// #let page-numbers = context numbering(
+//   "1 / 1",
+//   ..counter(page).get(),
+//   subtotal(),
+// )
 
 // Link formatting
 #show link: underline
@@ -32,8 +32,8 @@
 // General document formatting 
 #set text(fill: black)
 // #set page(numbering: "1 of 1")
-#set page(margin: (top: 1cm, bottom: 2cm, left: 2cm, right: 2cm),
-footer: align(center, page-numbers))
+#set page(margin: (top: 1cm, bottom: 2cm, left: 2cm, right: 2cm))
+//footer: align(center, page-numbers))
 #set par(justify: false)
 
 // Custom colours
@@ -202,6 +202,7 @@ As of *April 01, 2025* our files show that *#client.name* has not received the f
 #v(0.25cm)
 
 // Text
+//#metadata(none)#reset
 
 It is the responsibility of the student or their parent/guardian to update this immunization record by reporting the
 vaccines received to Public Health. For your reference, a record of all immunizations on file with Public Health for the
@@ -218,6 +219,7 @@ For more information on immunization exemptions, please visit: #text(fill:wdgtea
   
   
   #v(0.5cm)
+  // #pagebreak()
   
   // End notice 
   
@@ -225,7 +227,8 @@ For more information on immunization exemptions, please visit: #text(fill:wdgtea
   #set align(bottom)
   #text(size: 8pt)[
   The information in this notice was collected under the authority of the _Health Protection and Promotion Act_ in accordance with the _Municipal Freedom of Information and Protection of Privacy Act_ and the _Personal Health Information Protection Act_. This information is used for the delivery of public health programs and services; the administration of the agency; and the maintenance of healthcare databases, registries and related research, in compliance with legal and regulatory requirements. Any questions about the management of this information should be addressed to the Chief Privacy Officer at 1-800-265-7293 ext. 2975 or #link("privacy@wdgpublichealth.ca").]
-
+  // #metadata(none)#reset
+  // #metadata(none)#reset
   // #pagebreak()
 
 ]
@@ -233,11 +236,30 @@ For more information on immunization exemptions, please visit: #text(fill:wdgtea
 // Read in data from client_ids 
 #let client_ids = csv("client_ids.csv", delimiter: ",", row-type: array)
 
+
 #for row in client_ids {
-  
-  
-  let n = 0
-  
+  // Mark the start of a new "section" for page numbering
+  // pagebreak(weak: true)
+  // counter(page).update(1) // Reset page counter for this section
+  // pagebreak(weak: true)
+
+  let reset = <__reset>
+  let subtotal() = {
+  let loc = here()
+  let list = query(selector(reset).after(loc))
+  if list.len() > 0 { 
+    counter(page).at(list.first().location()).first() 
+  } else {
+    counter(page).final().first() 
+  }
+}
+
+  let page-numbers = context numbering(
+  "1 / 1",
+  ..counter(page).get(),
+  subtotal(),
+  )
+
   let value = row.at(0) // Access the first (and only) element of the row
   let data = json("client_data.json").at(value)
   let received = data.received
@@ -247,13 +269,22 @@ For more information on immunization exemptions, please visit: #text(fill:wdgtea
 
   let vaccines_due_array = vaccines_due.split(", ")
 
-  immunization_notice(data, value, vaccines_due_array)
-  immunization-table(received, diseases)
-  end_of_immunization_notice()
+  let section(it) = {
+    [#metadata(none)#reset]
+    pagebreak(weak: true)
+    counter(page).update(1) // Reset page counter for this section
+    pagebreak(weak: true)
+    page-numbers
+    immunization_notice(data, value, vaccines_due_array)
+    immunization-table(received, diseases)
+    end_of_immunization_notice()
+    page-numbers
+  }
 
-  pagebreak(weak: true)
-  counter(page).update(1)
-  pagebreak(weak: true)
-  n = n - 1
+  section([] + page-numbers)
+  // section([] )
+  // immunization_notice(data, value, vaccines_due_array)
+  // immunization-table(received, diseases)
+  // end_of_immunization_notice()
 
 }
