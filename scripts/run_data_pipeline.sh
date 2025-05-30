@@ -174,4 +174,33 @@ echo ""
 
 END=$(date +%s)
 DIFF=$(( $END - $START ))
-echo "Total time taken: $DIFF seconds"
+echo "Data preprocessing complete. Total time taken: $DIFF seconds"
+
+echo ""
+echo ""
+echo "Now generating the immunization notice templates..."
+echo ""
+echo ""
+
+echo ""
+echo ""
+echo "Generating immunization notice templates for English data..."
+echo ""
+echo ""
+
+echo ""
+echo ""
+echo "Getting list of json files in ${OUTDIR}/english_json"
+echo ""
+echo ""
+
+for jsonfile in ${OUTDIR}/english_json/*.json
+do
+    if [ -f "$jsonfile" ]; then
+        filename=$(basename "$jsonfile" .json)
+        echo "Generating template for $filename"
+        ./generate_template.sh ${OUTDIR}/english_json "$filename" ${OUTDIR}
+    else
+        echo "No JSON files found in ${OUTDIR}/english_json."
+    fi
+done
