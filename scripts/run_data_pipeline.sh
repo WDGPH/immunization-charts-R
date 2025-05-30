@@ -199,7 +199,7 @@ do
     if [ -f "$jsonfile" ]; then
         filename=$(basename "$jsonfile" .json)
         echo "Generating template for $filename"
-        ./generate_template.sh ${OUTDIR}/english_json "$filename" 
+        ./generate_template.sh ${OUTDIR}/english_json "$filename" "../config/parameters.yaml" "../templates/template.typ"
     else
         echo "No JSON files found in ${OUTDIR}/english_json."
     fi
