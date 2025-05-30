@@ -247,7 +247,7 @@ notices_client_ids.to_csv(output_client_ids_path, index=False)
 notices = dict(notices)
 
 # Save the structured data to a JSON file
-output_path = outdir + '/' + filename + "_structured.json"
+output_path = outdir + '/' + filename + ".json"
 with open(output_path, 'w') as f:
     json.dump(notices, f, indent=4)
 print(f"Structured data saved to {output_path}")
