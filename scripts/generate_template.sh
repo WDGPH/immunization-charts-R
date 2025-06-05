@@ -158,17 +158,17 @@ echo "
   columns: (0.5fr, 0.5fr),
   inset: 10pt,
   [#align(left)[
-    To: \
-*#client.name* \
-\
-*#client.address*  \
+    To: \ 
+*#client.name* \ 
+\ 
+*#client.address*  \ 
 *#client.city*  ]]
 , 
   [#align(left)[
-    Client ID: #smallcaps[*#client_id*]\
-    \
-    Date of Birth: *#client.date_of_birth*\
-    \
+    Client ID: #smallcaps[*#client_id*]\ 
+    \ 
+    Date of Birth: *#client.date_of_birth*\ 
+    \ 
     School: #smallcaps[*#client.school*]
   ]],
 )
