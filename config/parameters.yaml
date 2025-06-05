@@ -19,21 +19,21 @@ expected_columns:
   - Received Agents
 
 # Vaccines or agents that should occur in the template for the chart 
-chart_diseases:
-  Diphtheria: true
-  Tetanus: true
-  Pertussis: true
-  Polio: true
-  Hib: true
-  Pneumococcal: true
-  Rotavirus: true
-  Measles: true
-  Mumps: true
-  Rubella: true
-  Meningococcal: true
-  Varicella: true
-  Hepatitis B: true
-  HPV: true
+chart_diseases_header:
+  - Diphtheria
+  - Tetanus
+  - Pertussis
+  - Polio
+  - Hib
+  - Pneumococcal
+  - Rotavirus
+  - Measles
+  - Mumps
+  - Rubella
+  - Meningococcal
+  - Varicella
+  - Hepatitis B
+  - HPV
 
 # Vaccines or agents to ignore in/drop from immunization history
 ignore_agents:
