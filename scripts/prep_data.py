@@ -241,7 +241,7 @@ notices_client_ids = pd.DataFrame(notices_client_ids, columns=["Client_ID"])
 
 # Output the list of client IDs to a csv file
 output_client_ids_path = outdir + '/' + filename + "_client_ids.csv"
-notices_client_ids.to_csv(output_client_ids_path, index=False)
+notices_client_ids.to_csv(output_client_ids_path, index=False, header=False)
 
 # Convert the defaultdict to a regular dictionary for easier handling
 notices = dict(notices)

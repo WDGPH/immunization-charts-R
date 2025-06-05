@@ -5,8 +5,8 @@ FILENAME=${2}
 PARAMETERS=${3}
 LOGO=${4}
 
-CLIENTIDFILE=${INDIR}/${FILENAME}_client_ids.csv
-JSONFILE=${INDIR}/${FILENAME}.json
+CLIENTIDFILE=${FILENAME}_client_ids.csv
+JSONFILE=${FILENAME}.json
 OUTFILE=${INDIR}/${FILENAME}_immunization_notice.typ
 
 echo "
@@ -32,11 +32,10 @@ echo "
 #let darkred = rgb(153, 0, 0)
 
 // Custom shortcuts
-#let vax = ("⬤")
+#let vax = \"⬤\"
 
 // Font formatting
 #set text(
-  font: "Fira Sans",
   size: 10pt
 )
 
@@ -62,7 +61,7 @@ echo "
     // Populate disease columns with #vax or empty
     for disease_name in diseases {
 
-      let cell_content = ""
+      let cell_content = \"\"
       for record_disease in record.diseases {
         if record_disease == disease_name { 
           cell_content = vax
@@ -75,7 +74,7 @@ echo "
 
     // Add the Vaccine(s) column content
     let vaccine_content = if type(record.vaccine) == array {
-      record.vaccine.join(", ") 
+      record.vaccine.join(\", \") 
     } else {
       record.vaccine
     }
@@ -198,7 +197,7 @@ It is the responsibility of the student or their parent/guardian to update this 
 vaccines received to Public Health. For your reference, a record of all immunizations on file with Public Health for the
 student, excluding seasonal vaccinations against influenza and COVID-19, has been included below.
 
-For more information on immunization exemptions, please visit: #text(fill:wdgteal)[*#link("https://wdgpublichealth.ca/your-kids/vaccination")*]
+For more information on immunization exemptions, please visit: #text(fill:wdgteal)[*#link(\"https://wdgpublichealth.ca/your-kids/vaccination\")*]
 ]
 
 #let end_of_immunization_notice() = [
@@ -215,12 +214,12 @@ For more information on immunization exemptions, please visit: #text(fill:wdgtea
   #set align(left)
   #set align(bottom)
   #text(size: 8pt)[
-  The information in this notice was collected under the authority of the _Health Protection and Promotion Act_ in accordance with the _Municipal Freedom of Information and Protection of Privacy Act_ and the _Personal Health Information Protection Act_. This information is used for the delivery of public health programs and services; the administration of the agency; and the maintenance of healthcare databases, registries and related research, in compliance with legal and regulatory requirements. Any questions about the management of this information should be addressed to the Chief Privacy Officer at 1-800-265-7293 ext. 2975 or #link("privacy@wdgpublichealth.ca").]
+  The information in this notice was collected under the authority of the _Health Protection and Promotion Act_ in accordance with the _Municipal Freedom of Information and Protection of Privacy Act_ and the _Personal Health Information Protection Act_. This information is used for the delivery of public health programs and services; the administration of the agency; and the maintenance of healthcare databases, registries and related research, in compliance with legal and regulatory requirements. Any questions about the management of this information should be addressed to the Chief Privacy Officer at 1-800-265-7293 ext. 2975 or #link(\"privacy@wdgpublichealth.ca\").]
 
 ]
 
 // Read in data from client_ids 
-#let client_ids = csv(\""${CLIENTIDFILE}"\", delimiter: ",", row-type: array)
+#let client_ids = csv(\""${CLIENTIDFILE}"\", delimiter:\",\", row-type: array)
 
 
 #for row in client_ids {
@@ -252,7 +251,7 @@ For more information on immunization exemptions, please visit: #text(fill:wdgtea
   // get vaccines due, split string into an array of sub strings
   let vaccines_due = data.vaccines_due
 
-  let vaccines_due_array = vaccines_due.split(", ")
+  let vaccines_due_array = vaccines_due.split(\", \")
 
   let section(it) = {
     [#metadata(none)#reset]
