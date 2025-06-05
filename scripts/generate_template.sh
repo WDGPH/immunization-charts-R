@@ -36,6 +36,7 @@ echo "
 
 // Font formatting
 #set text(
+  font: \"Fira Sans\",
   size: 10pt
 )
 

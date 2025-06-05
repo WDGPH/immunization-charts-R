@@ -1,5 +1,5 @@
 #!/bin/bash
-START=$(date +%s)
+START_PREPROCESSING=$(date +%s)
 
 INDIR=${1}
 INFILE=${2}
@@ -172,8 +172,8 @@ echo "Data processing complete. The json files are located in the ${OUTDIR}/engl
 echo ""
 echo ""
 
-END=$(date +%s)
-DIFF=$(( $END - $START ))
+END_PREPROCESSING=$(date +%s)
+DIFF=$(( $END_PREPROCESSING - $START_PREPROCESSING ))
 echo "Data preprocessing complete. Total time taken: $DIFF seconds"
 
 echo ""
@@ -194,6 +194,8 @@ echo "Getting list of json files in ${OUTDIR}/english_json"
 echo ""
 echo ""
 
+START_TEMPLATE_GENERATION=$(date +%s)
+
 for jsonfile in ${OUTDIR}/english_json/*.json
 do
     if [ -f "$jsonfile" ]; then
@@ -204,3 +206,15 @@ do
         echo "No JSON files found in ${OUTDIR}/english_json."
     fi
 done
+
+END_TEMPLATE_GENERATION=$(date +%s)
+DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_GENERATION ))
+echo "Template generation complete for English data. Total time taken: $DIFF seconds"
+
+START_TEMPLATE_COMPILATION=$(date +%s)
+
+typst compile --font-path ../templates/assets/ --root ../ ../output/english_json/English_Maple_Syrup_High_immunization_notice.typ
+
+END_TEMPLATE_GENERATION=$(date +%s)
+DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_COMPILATION ))
+echo "Template compilation complete for English data. Total time taken: $DIFF seconds"
