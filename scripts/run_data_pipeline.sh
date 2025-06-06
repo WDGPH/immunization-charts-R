@@ -124,9 +124,26 @@ do
     done
 done
 
+
 echo ""
 echo ""
-echo "Processing and transforming ENGLISH data from excel to structure json..."
+echo "Pulling batch size from yaml file"
+echo ""
+echo ""
+
+batch_size=$(grep '^batch_size:' ../config/parameters.yaml | awk '{print $2}')
+
+echo ""
+echo ""
+echo "Separating csv files according to batch size: ${batch_size)}"
+echo ""
+echo ""
+
+# split -l ${batch_size} --filter='cat > ${FILE}.csv' $
+
+echo ""
+echo ""
+echo "Processing and transforming ENGLISH data from csv to structure json..."
 echo ""
 echo ""
 
@@ -188,33 +205,39 @@ echo "Generating immunization notice templates for English data..."
 echo ""
 echo ""
 
+# echo ""
+# echo ""
+# echo "Getting list of json files in ${OUTDIR}/english_json"
+# echo ""
+# echo ""
+
+# START_TEMPLATE_GENERATION=$(date +%s)
+
+# for jsonfile in ${OUTDIR}/english_json/*.json
+# do
+#     if [ -f "$jsonfile" ]; then
+#         filename=$(basename "$jsonfile" .json)
+#         echo "Generating template for $filename"
+#         ./generate_template.sh ${OUTDIR}/english_json "$filename" "../../config/parameters.yaml" "../../templates/assets/logo.svg"
+#     else
+#         echo "No JSON files found in ${OUTDIR}/english_json."
+#     fi
+# done
+
+# END_TEMPLATE_GENERATION=$(date +%s)
+# DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_GENERATION ))
+# echo "Template generation complete for English data. Total time taken: $DIFF seconds"
+
+# START_TEMPLATE_COMPILATION=$(date +%s)
+
+# typst compile --font-path ../templates/assets/ --root ../ ../output/english_json/English_Maple_Syrup_High_immunization_notice.typ
+
+# END_TEMPLATE_GENERATION=$(date +%s)
+# DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_COMPILATION ))
+# echo "Template compilation complete for English data. Total time taken: $DIFF seconds"
+
 echo ""
 echo ""
-echo "Getting list of json files in ${OUTDIR}/english_json"
+echo "Clean-up files"
 echo ""
-echo ""
-
-START_TEMPLATE_GENERATION=$(date +%s)
-
-for jsonfile in ${OUTDIR}/english_json/*.json
-do
-    if [ -f "$jsonfile" ]; then
-        filename=$(basename "$jsonfile" .json)
-        echo "Generating template for $filename"
-        ./generate_template.sh ${OUTDIR}/english_json "$filename" "../../config/parameters.yaml" "../../templates/assets/logo.svg"
-    else
-        echo "No JSON files found in ${OUTDIR}/english_json."
-    fi
-done
-
-END_TEMPLATE_GENERATION=$(date +%s)
-DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_GENERATION ))
-echo "Template generation complete for English data. Total time taken: $DIFF seconds"
-
-START_TEMPLATE_COMPILATION=$(date +%s)
-
-typst compile --font-path ../templates/assets/ --root ../ ../output/english_json/English_Maple_Syrup_High_immunization_notice.typ
-
-END_TEMPLATE_GENERATION=$(date +%s)
-DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_COMPILATION ))
-echo "Template compilation complete for English data. Total time taken: $DIFF seconds"
+echo "" 
