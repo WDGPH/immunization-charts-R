@@ -14,6 +14,16 @@ This project is written in **bash** and **Python**, and uses [Typst](https://typ
 
 All dependencies are managed via a `pyproject.toml` file. 
 
+To start the virtual environment, follow the following steps: 
+
+1. Create the virtual environment
+
+`uv venv`
+
+2. Activate the virtual environment 
+
+`source .venv/bin/activate`
+
 ### Data
 This project is intended to be used with data extracts from [Panorama PEAR](https://accessonehealth.ca/).
 

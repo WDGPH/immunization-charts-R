@@ -158,7 +158,7 @@ echo "Created directory ${OUTDIR}/english_json"
 echo ""
 echo ""
 
-for i in `ls ${OUTDIR}/by_language_school/`
+for i in `ls ${OUTDIR}/by_language_school/*_a*`
 do
     if [[ $i == *"English"* ]]; then
         echo "Processing: $i"
