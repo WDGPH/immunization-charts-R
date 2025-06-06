@@ -269,10 +269,18 @@ END_TEMPLATE_GENERATION=$(date +%s)
 DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_COMPILATION ))
 echo "Template compilation complete for English data. Total time taken: $DIFF seconds"
 
-# echo ""
-# echo ""
-# echo "Clean-up files"
-# echo ""
-# echo "" 
+echo ""
+echo ""
+echo "Clean-up files"
+echo ""
+echo "" 
 
-# rm -r ${OUTDIR}/by_language_school/
+rm -r ${OUTDIR}/by_language/
+rm -r ${OUTDIR}/by_school/
+rm -r ${OUTDIR}/batched/
+rm -r ${OUTDIR}/english_json/*.typ
+# rm -r ${OUTDIR}/french_json/*.typ
+rm -r ${OUTDIR}/english_json/*.json
+# rm -r ${OUTDIR}/french_json/*.json
+rm -r ${OUTDIR}/english_json/*.csv
+# rm -r ${OUTDIR}/french_json/*.csv
