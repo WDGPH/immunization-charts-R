@@ -139,7 +139,11 @@ echo "Separating csv files according to batch size: ${batch_size)}"
 echo ""
 echo ""
 
-# split -l ${batch_size} --filter='cat > ${FILE}.csv' $
+for file in `ls ${OUTDIR}/by_language_school/`
+do
+    filename=$(echo "$file" | cut -f 1 -d '.')
+    split -l ${batch_size} --filter='cat > ${FILE}.csv' ${OUTDIR}/by_language_school/${file} ${OUTDIR}/by_language_school/${filename}_
+done
 
 echo ""
 echo ""
