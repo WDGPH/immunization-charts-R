@@ -195,79 +195,79 @@ do
     fi
 done
 
-# echo ""
-# echo ""
-# echo "Processing and transforming FRENCH data from excel to structure json..."
-# echo ""
-# echo ""
+echo ""
+echo ""
+echo "Processing and transforming FRENCH data from excel to structure json..."
+echo ""
+echo ""
 
-# mkdir -p "${OUTDIR}/french_json"
-# echo ""
-# echo ""
-# echo "Created directory ${OUTDIR}/french_json"
-# echo ""
-# echo ""
+mkdir -p "${OUTDIR}/french_json"
+echo ""
+echo ""
+echo "Created directory ${OUTDIR}/french_json"
+echo ""
+echo ""
 
-# # for i in `ls ${OUTDIR}/by_language_school/`
-# # do
-# #     if [[ $i == *"French"* ]]; then
-# #         echo "Processing: $i"
-# #         python prep_data.py "${OUTDIR}/by_language_school/${i}" "../config/parameters.yaml" "../config/disease_map.json" "../input/vaccine_reference.json" "${OUTDIR}/french_json"
-# #     fi
-# # done
+for i in `ls ${OUTDIR}/by_language_school/`
+do
+    if [[ $i == *"French"* ]]; then
+        echo "Processing: $i"
+        python prep_data.py "${OUTDIR}/batched/$i" "../config/parameters.yaml" "../config/disease_map.json" "../input/vaccine_reference.json" "${OUTDIR}/french_json"
+    fi
+done
 
-# echo ""
-# echo ""
-# echo "Data processing complete. The json files are located in the ${OUTDIR}/english_json and ${OUTDIR}/french_json directories."
-# echo ""
-# echo ""
+echo ""
+echo ""
+echo "Data processing complete. The json files are located in the ${OUTDIR}/english_json and ${OUTDIR}/french_json directories."
+echo ""
+echo ""
 
-# END_PREPROCESSING=$(date +%s)
-# DIFF=$(( $END_PREPROCESSING - $START_PREPROCESSING ))
-# echo "Data preprocessing complete. Total time taken: $DIFF seconds"
+END_PREPROCESSING=$(date +%s)
+DIFF=$(( $END_PREPROCESSING - $START_PREPROCESSING ))
+echo "Data preprocessing complete. Total time taken: $DIFF seconds"
 
-# echo ""
-# echo ""
-# echo "Now generating the immunization notice templates..."
-# echo ""
-# echo ""
+echo ""
+echo ""
+echo "Now generating the immunization notice templates..."
+echo ""
+echo ""
 
-# echo ""
-# echo ""
-# echo "Generating immunization notice templates for English data..."
-# echo ""
-# echo ""
+echo ""
+echo ""
+echo "Generating immunization notice templates for English data..."
+echo ""
+echo ""
 
-# # echo ""
-# # echo ""
-# # echo "Getting list of json files in ${OUTDIR}/english_json"
-# # echo ""
-# # echo ""
+echo ""
+echo ""
+echo "Getting list of json files in ${OUTDIR}/english_json"
+echo ""
+echo ""
 
-# # START_TEMPLATE_GENERATION=$(date +%s)
+START_TEMPLATE_GENERATION=$(date +%s)
 
-# # for jsonfile in ${OUTDIR}/english_json/*.json
-# # do
-# #     if [ -f "$jsonfile" ]; then
-# #         filename=$(basename "$jsonfile" .json)
-# #         echo "Generating template for $filename"
-# #         ./generate_template.sh ${OUTDIR}/english_json "$filename" "../../config/parameters.yaml" "../../templates/assets/logo.svg"
-# #     else
-# #         echo "No JSON files found in ${OUTDIR}/english_json."
-# #     fi
-# # done
+for jsonfile in ${OUTDIR}/english_json/*.json
+do
+    if [ -f "$jsonfile" ]; then
+        filename=$(basename "$jsonfile" .json)
+        echo "Generating template for $filename"
+        ./generate_template.sh ${OUTDIR}/english_json "$filename" "../../config/parameters.yaml" "../../templates/assets/logo.svg"
+    else
+        echo "No JSON files found in ${OUTDIR}/english_json."
+    fi
+done
 
-# # END_TEMPLATE_GENERATION=$(date +%s)
-# # DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_GENERATION ))
-# # echo "Template generation complete for English data. Total time taken: $DIFF seconds"
+END_TEMPLATE_GENERATION=$(date +%s)
+DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_GENERATION ))
+echo "Template generation complete for English data. Total time taken: $DIFF seconds"
 
-# # START_TEMPLATE_COMPILATION=$(date +%s)
+START_TEMPLATE_COMPILATION=$(date +%s)
 
-# # typst compile --font-path ../templates/assets/ --root ../ ../output/english_json/English_Maple_Syrup_High_immunization_notice.typ
+typst compile --font-path ../templates/assets/ --root ../ ../output/english_json/English_Maple_Syrup_High_01_immunization_notice.typ
 
-# # END_TEMPLATE_GENERATION=$(date +%s)
-# # DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_COMPILATION ))
-# # echo "Template compilation complete for English data. Total time taken: $DIFF seconds"
+END_TEMPLATE_GENERATION=$(date +%s)
+DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_COMPILATION ))
+echo "Template compilation complete for English data. Total time taken: $DIFF seconds"
 
 # echo ""
 # echo ""
