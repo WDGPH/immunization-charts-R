@@ -174,26 +174,26 @@ do
 
 done
 
-# echo ""
-# echo ""
-# echo "Processing and transforming ENGLISH data from csv to structure json..."
-# echo ""
-# echo ""
+echo ""
+echo ""
+echo "Processing and transforming ENGLISH data from csv to structure json..."
+echo ""
+echo ""
 
-# mkdir -p "${OUTDIR}/english_json"
-# echo "" 
-# echo ""
-# echo "Created directory ${OUTDIR}/english_json"
-# echo ""
-# echo ""
+mkdir -p "${OUTDIR}/english_json"
+echo "" 
+echo ""
+echo "Created directory ${OUTDIR}/english_json"
+echo ""
+echo ""
 
-# for i in `ls ${OUTDIR}/by_language_school/*_a*.csv`
-# do
-#     if [[ $i == *"English"* ]]; then
-#         echo "Processing: $i"
-#     python prep_data.py "$i" "../config/parameters.yaml" "../config/disease_map.json" "../input/vaccine_reference.json" "${OUTDIR}/english_json"
-#     fi
-# done
+for i in `ls ${OUTDIR}/batched/`
+do
+    if [[ $i == *"English"* ]]; then
+        echo "Processing: $i"
+    python prep_data.py "${OUTDIR}/batched/$i" "../config/parameters.yaml" "../config/disease_map.json" "../input/vaccine_reference.json" "${OUTDIR}/english_json"
+    fi
+done
 
 # echo ""
 # echo ""
