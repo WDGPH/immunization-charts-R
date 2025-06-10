@@ -111,10 +111,6 @@ for (j in seq_len(nrow(params$client_data))) {
 "
 \\newdocument
 
-\\begin{center}
-{\\color{darkred}\\Large \\textbf{Bring this notice to your family doctor or healthcare provider}}
-\\end{center}
-
 \\vspace{0.5cm}
 
 \\begin{minipage}[c]{0.35\\textwidth}
@@ -132,9 +128,9 @@ for (j in seq_len(nrow(params$client_data))) {
 \\setlength{\\tabcolsep}{10pt}
 \\begin{table}[h!]
     \\begin{tabularx}{\\textwidth}{|X|X|}
-    \\hline ",
-      if(client$`Age 16+`) {"To:"} else {"To the parent/guardian of:"},
-        "\\newline\\redact{\\textbf{", client$Name, "}}
+    \\hline
+    To the parent/guardian of:
+        \\newline\\redact{\\textbf{", client$Name, "}}
         \\newline\\newline
         \\begin{minipage}[t]{\\linewidth}\\raggedright
             \\textbf{\\redact{", if(!is.na(client$`Street Address`)) {paste0(client$`Street Address`, collapse = "")}, "}",
@@ -152,22 +148,54 @@ for (j in seq_len(nrow(params$client_data))) {
 \\end{tabularx}
 \\end{table}
 
-\\normalsize\\raggedright
-As of \\textbf{", params$data_date, "}, our files show \\redact{\\textbf{", client$Name, "}} has not received the following immunization(s):
+\\normalsize\\justifying
+As of \\textbf{", params$data_date, "}, Wellington-Dufferin-Guelph (WDG) Public Health does not have up-to-date vaccination records for your child, \\redact{\\textbf{", client$Name, "}}. Please review the immunization record included in this notice, and update your child's record using one of the following options: and report any vaccines received to WDG Public Health.
 
 \\vspace{0.25cm}
-\\begin{bolditemize}
+\\begin{itemize}
 \\setlength\\itemsep{-0.5em}
-  \\item ", client$`Vaccines Due`, "
-\\end{bolditemize}
+  \\item By visting \\myurl{www.immunizewdg.ca}
+  \\item By emailing \\myurl{vaccine.records@wdgpublichealth.ca}
+  \\item By mailing a photocopy of child's immunization record to: Vaccine Records, 160 Chancellors Way, Guelph, ON N1G 0E1
+  \\item By Phone: 1-800-265-7293 ext. 7006
+\\end{itemize}
 \\vspace{0.25cm}
 
-\\normalsize\\raggedright
-It is the responsibility of the ", if(client$`Age 16+`) {"student or their parent/guardian"} else {"parent/guardian of the student"}, " to update this immunization record by reporting the vaccines received to Public Health. For your reference, a record of all immunizations on file with Public Health for the student, excluding seasonal vaccinations against influenza and COVID-19, has been included below.
+\\normalsize\\justifying
+Please update Public Health and your childcare centre everytime your child receives a vaccine. By keeping your child's vaccinations up to date, you are not only protecting their health but also the health of other children and staff at the childcare centre.
 
-For information on immunization exemptions, please visit: \\myurl{https://wdgpublichealth.ca/your-kids/vaccination}.
+\\normalsize\\justifying
+\\textbf{If you are choosing not to immunize your child}, a valid medical exemption or statement of conscience or religious belief must be completed and submitted to Public Health. Links to these forms can be located at \\myurl{https://wdgpublichealth.ca/your-kids/vaccination}. Please note this exemption is for childcare only, and a new exemption will be required upon enrollment in elementary school.
 
-\\vspace{0.25cm}
+\\normalsize\\justifying
+If there is an outbreak of a vaccine-preventable disease, Public Health may require that children who are not adequately immunized (including those with exemptions) be excluded from the childcare centre until the outbreak is over.
+
+\\normalsize\\justifying
+If you have any questions about your child's vaccines, please call 1-800-265-7293 ext. 7006 to speak with a Public Health Nurse.
+
+\\vspace{0.5cm}
+
+Sincerely,
+
+\\includegraphics[width=6cm]{assets/signature2.jpg}
+
+\\textbf{Dr. Matthew Tenenbaum, MD, CCFP, MPH, FRCPC}\\newline
+Associate Medical Officer of Health\\newline
+Wellington-Dufferin-Guelph Public Health
+
+\\vspace{0.5cm}
+
+\\begin{center}
+{\\Large \\textbf{Every time your child gets a vaccine, please update their immunization record with Public Health. For more information visit \\myurl{www.immunizewdg.ca} }}
+\\end{center}
+
+\\clearpage
+
+\\begin{FlushRight}
+\\normalsize Client ID: \\textbf{", client$`Client ID`, "}
+\\end{FlushRight}
+
+\\vspace{0.5cm}
 
 \\setlength{\\arrayrulewidth}{1pt}
 \\renewcommand{\\arraystretch}{1.25}

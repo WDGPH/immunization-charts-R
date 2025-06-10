@@ -2,7 +2,11 @@
 # Parameters #
 ##############
 
-output_folder = paste0("demo-output-", stringr::str_remove_all(Sys.time(), "\\W"))
+# Input file
+clients = readxl::read_xlsx("input//Daycare_overdue_June4_2025.xlsx", sheet=2, col_types = "text")
+
+# Output folder
+output_folder = paste0("output-", stringr::str_remove_all(Sys.time(), "\\W"))
 
 # Expected columns in input files
 expected_columns = c(
@@ -47,13 +51,8 @@ ignore_agents = c(
   'RabIg',
   'Ig')
 
-# Used to calculate student age at time of mail delivery
-# Students 16 and older can be addressed directly
-# Letters for students under 16 should be addressed to their parent/guardian
-delivery_date = as.Date('2025-04-08')
-
 # To include in notice text as date that immunization history is reflective of
-data_date = as.Date('2025-04-01')
+data_date = as.Date('2025-06-05')
 
 # Minimum number of rows to show in immunization history chart
 # Charts will be padded with rows as appropriate
@@ -115,30 +114,6 @@ chart_col_header_english = c("Date Given", "At Age", chart_col_header, "Vaccine(
 chart_col_header_french = c("Date", "Âge", chart_col_header, "Vaccin(s)") |>
   paste(collapse = " & ")
 
-# Vaccination history string parser
-parse_vaccination_history = function(x, ignore_agents = NULL) {
-  if (is.na(x) || nchar(x) == 0) {
-    return(tibble(`Date Given` = as.Date(character(0)), `Vaccine` = character(0)))
-  }
-  
-  x |>
-    # Delete trailing comma
-    str_remove(pattern = ",$") |>
-    
-    # Consistent date formatting can help to precisely split string
-    str_split(pattern = ",\\s*(?=\\w{3,3} \\d{1,2}, \\d{4,4})") |>
-    extract2(1) |>
-    str_split(pattern = "(?<=^\\w{3,3} \\d{1,2}, \\d{4,4}) - ") |>
-    
-    # Format date - vaccine string pairs into table, and format as date
-    map(\(x) tibble(
-      `Date Given` = as.Date(x[1], format = "%b %d, %Y"),
-      `Vaccine` = x[2])) |>
-    list_rbind() |>
-    filter(!(`Vaccine` %in% ignore_agents))
-}
-
-
 #Y M age formatting
 diff_ym = function(date1, date2){
   ym_paste = function(x){paste0(floor(x / 12), "Y ", floor(x %% 12), "M")}
@@ -153,46 +128,34 @@ diff_am = function(date1, date2){
   am_paste()
   }
 
+# Function to parse vaccination history
+source("parse_vaccination_history.R")
+
 # Latex utility functions
 source("latex_utilities.R")
 
 # Create a vector which will track vaccine occurrences
 vaccine_occurrences = character(0)
 
-# List XLSX files in directory
-clients = list.files(
-  path = "input/",
-  pattern = ".xlsx$",
-  full.names =  T) |>
-  
-  # Ensure files listed in ascending date order
-  sort() |>
-    
-  # Read all listed XLSX files
-  # Column names and types specific to the report created
-  purrr::map(\(x) {
-    df = readxl::read_xlsx(
-      path = x,
-      col_types = c(
-        rep("text", 5),
-        rep("date", 1),
-        rep("text", 6)))
-    
-    if (!all(names(df) == expected_columns)) {
-      warning("Input file structure not as expected, script may not proceed correctly")
-    }
-    
-    return(df)
-    }) |>
+clients = clients |>
+  select(
+    `Client ID`,
+    `School` = `School/ Daycare ID`,
+    `First Name`,
+    `Last Name`,
+    `Street Address`,
+    `City`,
+    `Province`,
+    `Postal Code`,
+    `Date of Birth`,
+    `Received Agents` = `PEAR.Imms Given`
+    ) |> 
 
-  # Bind list of data frames
-  bind_rows() |>
-  
-  # Just do 1000 for demo
-  filter(row_number() <= 1000) |>
-  
-  # Make text uppercase
   mutate(
+    # Add Language column (English assumed as language data not provided)
+    `Language` = "English",
+
+    # Make text uppercase
     across(
     .cols = all_of(c(
       "School", "First Name", "Last Name",
@@ -208,43 +171,32 @@ clients = list.files(
   mutate(
     # Formatting of fields
     across(`Date of Birth`,
-      \(x) as.Date(x)),
+      \(x) as.Date(as.integer(x), origin = "1899-12-30")),
 
-    across(`Vaccines Due`,
-      \(x) {x |>
-        # Remove trailing commas
-        str_remove_all(
-         pattern = ",$") |>
-          
-        # Refer to diseases by common names
-        str_replace_all(
-          pattern = c(
-            "Haemophilus influenzae infection, invasive" = "Invasive Haemophilus influenzae infection (Hib)",
-            "Poliomyelitis" = "Polio",
-            "Human papilloma virus infection" = "Human Papillomavirus (HPV)",
-            "Varicella" = "Varicella (Chickenpox)")) |>
-          
-        # Create LaTeX list of due immunizations
-        str_replace_all(
-         pattern = ", ",
-          replacement = "\n \\\\item ")}),
- 
     across(`Received Agents`,
       \(x) if_else(str_detect(x, pattern = "^- ,$"), NA_character_, x)),
 
-    # Create `Received Agents Table` based on string of vaccinations
+    `Received Agents Table` = parse_vaccination_history(
+      `Received Agents`,
+      ignore_agents = ignore_agents,
+      log_file = file.path(output_folder, "parse_vaccination_history.log")
+      ),
+
+    # Add `At Age` column to `Received Agents Table`
+    # Track vaccine occurrences
     `Received Agents Table` = map2(
-      .x = `Received Agents`, 
+      .x = `Received Agents Table`,
       .y = `Date of Birth`,
       .f = \(x, y){
-        z = parse_vaccination_history(x, ignore_agents = ignore_agents)
-        vaccine_occurrences <<- c(vaccine_occurrences, use_series(z, Vaccine))
-        
-        z |>
+        if (nrow(x) > 0) {
+          vaccine_occurrences <<- c(vaccine_occurrences, use_series(x, Vaccine))
+        }
+
+        x |>
           mutate(`At Age` = diff_ym(`Date Given`, y)) |>
           arrange(`Date Given`)
-        }),
-    
+      }),
+        
     # Create vaccination history chart based on `Received Agents Table`
     `Vaccine History Table` = map(
       .x = `Received Agents Table`,
@@ -267,13 +219,6 @@ clients = list.files(
             `Vaccine(s)`,
             pattern = "unspecified",
             replacement = "unsp"))}),
-    
-    # Calculate number of rows in vaccine history chart
-    # May be used to separate out particularly long vaccine histories which
-    # exceed two page limit
-    `Vaccine History Table Rows` = map(
-      .x = `Vaccine History Table`,
-      .f = \(x){x = x |> nrow()}),
 
     # Create a LaTeX table
     `Vaccine History LaTeX` = map(
@@ -306,10 +251,12 @@ vaccine_occurrences_table = tibble(`Vaccine` = vaccine_occurrences) |>
     by = join_by(Vaccine),
     relationship = "one-to-one",
     keep = T) |>
-  rename(c(
-    "Vaccine" = "Vaccine.x",
-    "Matched" = "Vaccine.y")) |>
-  mutate(Matched = !is.na(Matched)) |>
+  mutate(
+    `Vaccine` = coalesce(`Vaccine.x`, `Vaccine.y`),
+    `n` = replace_na(`n`, 0L),
+    `Matched` = `n` == 0L | (!is.na(`Vaccine.x`) & !is.na(`Vaccine.y`))
+  ) |>
+  select(Vaccine, n, Matched) |>
   arrange(Vaccine)
 
 readr::write_csv(
@@ -334,15 +281,12 @@ clients = clients |>
     # Non-breaking spaces within name
     `Name` = str_replace_all(`Name`, "\\s", '~'),
     `Birth Year`= lubridate::year(`Date of Birth`),
-    `Age 16+` = lubridate::time_length(
-      delivery_date - `Date of Birth`,
-      unit = "year") >= 16,
     `Date of Birth` = 
       case_when(
         `Language` == "French" ~ withr::with_locale(
           c(LC_TIME = "fr_FR.UTF-8"),
-          format(`Date of Birth`, "%d %B %Y")),
-        .default = format(`Date of Birth`, "%B %d, %Y")
+          format(`Date of Birth`, "%d~%B~%Y")),
+        .default = format(`Date of Birth`, "%B~%d,~%Y")
       )
     )
 
@@ -402,31 +346,6 @@ render_batch = function(batch_data, lang = "EN") {
       })
   })
 
-  end_time = Sys.time()
-  cat("Total render time:", round(difftime(end_time, start_time, units = "secs"), 2), "seconds\n")
-}
-
-
-# French Clients
-{
-  start_time = Sys.time()
-  
-  progressr::with_progress({
-    p = progressr::progressor(steps = nrow(clients |> filter(Language == "French")))
-    
-    clients |>
-      filter(Language == "French") |>
-      group_split(School) |>
-      purrr::map(\(school_df) split_batches(school_df, batch_size)) |>
-      purrr::flatten() |>
-      furrr::future_map(\(x) {
-        render_batch(x, lang = "FR")
-        p(amount = nrow(x))
-      })
-  })
-  
-  end_time = Sys.time()
-  
   end_time = Sys.time()
   cat("Total render time:", round(difftime(end_time, start_time, units = "secs"), 2), "seconds\n")
 }

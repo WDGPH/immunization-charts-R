@@ -6,3 +6,11 @@ input
 output
 preprocessing
 assets
+*.zip
+*.log
+*.csv
+*.pdf
+*.tex
+*.aux
+*.knit.md
+output*/
