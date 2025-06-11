@@ -110,7 +110,7 @@ If you have any questions about your child’s vaccines, please call 1-800-265-7
 
 Sincerely,
 
-#image("logo.svg", width: 4cm)
+#image("20250611_MatthewTenebaum_Signature.jpg", width: 4cm)
 
 Matthew Tenenbaum, MD, CCFP, MPH, FRCPC
 
