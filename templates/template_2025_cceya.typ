@@ -66,9 +66,12 @@
   columns: (0.5fr, 0.5fr),
   inset: 10pt,
   [#align(left)[
-    To: \
+    To Parent/Guardian of: \
 *#client.name* \
 \
+
+Address: \
+
 *#client.address*  \
 *#client.city*  ]]
 , 
@@ -77,7 +80,7 @@
     \
     Date of Birth: *#client.date_of_birth*\
     \
-    School: #smallcaps[*#client.school*]
+    Childcare Centre: #smallcaps[*#client.school*]
   ]],
 )
 ]
