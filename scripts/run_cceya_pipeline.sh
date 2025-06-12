@@ -11,6 +11,30 @@ echo "Welcome to the WDGPH CCEPYA report generator..."
 echo ""
 echo ""
 
+echo ""
+echo ""
+echo "Checking to see if the vaccine reference spreadsheet exists..."
+echo ""
+echo ""
+
+if [ ! -f "${INDIR}/vaccine_reference.xlsx" ]
+then
+    echo "ERROR! File ${INDIR}/vaccine_reference.xlsx does not exist. Check your system arguments to ensure you are specifying the correct input directory. Check to ensure that the vaccine reference sheet exists and is in the correct directory."
+    exit 1
+fi
+
+echo ""
+echo ""
+echo "If the vaccine reference json does not already exist we will convert the spreadsheet into json for further processing."
+echo ""
+echo ""
+
+if [ ! -f "${INDIR}/vaccine_reference.json" ]
+then 
+    python convert_vaccine_reference.py
+fi
+
+
 
 echo ""
 echo ""
@@ -116,50 +140,48 @@ echo ""
 
 for i in `ls ${OUTDIR}/batched/`
 do
-    if [[ $i == *"English"* ]]; then
-        echo "Processing: $i"
+    echo "Processing: $i"
     python prep_data.py "${OUTDIR}/batched/$i" "../config/parameters.yaml" "../config/disease_map.json" "../input/vaccine_reference.json" "${OUTDIR}/english_json"
-    fi
 done
 
 END_PREPROCESSING=$(date +%s)
 DIFF=$(( $END_PREPROCESSING - $START_PREPROCESSING ))
 echo "Data preprocessing complete. Total time taken: $DIFF seconds"
 
-# echo ""
-# echo ""
-# echo "Now generating the immunization notice templates..."
-# echo ""
-# echo ""
+echo ""
+echo ""
+echo "Now generating the immunization notice templates..."
+echo ""
+echo ""
 
-# echo ""
-# echo ""
-# echo "Generating immunization notice templates for English data..."
-# echo ""
-# echo ""
+echo ""
+echo ""
+echo "Generating immunization notice templates for English data..."
+echo ""
+echo ""
 
-# echo ""
-# echo ""
-# echo "Getting list of json files in ${OUTDIR}/english_json"
-# echo ""
-# echo ""
+echo ""
+echo ""
+echo "Getting list of json files in ${OUTDIR}/english_json"
+echo ""
+echo ""
 
-# START_TEMPLATE_GENERATION=$(date +%s)
+START_TEMPLATE_GENERATION=$(date +%s)
 
-# for jsonfile in ${OUTDIR}/english_json/*.json
-# do
-#     if [ -f "$jsonfile" ]; then
-#         filename=$(basename "$jsonfile" .json)
-#         echo "Generating template for $filename"
-#         ./generate_template.sh ${OUTDIR}/english_json "$filename" "../../config/parameters.yaml" "../../templates/assets/logo.svg"
-#     else
-#         echo "No JSON files found in ${OUTDIR}/english_json."
-#     fi
-# done
+for jsonfile in ${OUTDIR}/english_json/*.json
+do
+    if [ -f "$jsonfile" ]; then
+        filename=$(basename "$jsonfile" .json)
+        echo "Generating template for $filename"
+        ./generate_template_cceya.sh ${OUTDIR}/english_json "$filename" "../../config/parameters.yaml" "../../templates/assets/logo.svg"
+    else
+        echo "No JSON files found in ${OUTDIR}/english_json."
+    fi
+done
 
-# END_TEMPLATE_GENERATION=$(date +%s)
-# DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_GENERATION ))
-# echo "Template generation complete for English data. Total time taken: $DIFF seconds"
+END_TEMPLATE_GENERATION=$(date +%s)
+DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_GENERATION ))
+echo "Template generation complete for English data. Total time taken: $DIFF seconds"
 
 # START_TEMPLATE_COMPILATION=$(date +%s)
 

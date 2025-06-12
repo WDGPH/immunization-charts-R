@@ -67,7 +67,7 @@ if not os.path.exists(sys.argv[5]):
 
 # Read client vaccination file
 path_vax = sys.argv[1]
-df = pd.read_csv(path_vax, sep = ";")
+df = pd.read_csv(path_vax, sep = ",")
 
 # Read yaml config file
 path_config = sys.argv[2]
@@ -87,24 +87,37 @@ with open (path_vaccine_ref, 'r') as f:
 # Read in output directory
 outdir = sys.argv[5]
 
-# =============================================================================
-# DATA CHECKS
-# =============================================================================
-
-# Conduct checks of the data using yaml file...
-# Check to see if the expected columns in the df match what is in the yaml
-expected_columns = data['expected_columns']
-if expected_columns != list(df.columns):
-    print(f"Column mismatch. \nExpected {expected_columns}.\nFound: {list(df.columns)}")
-    sys.exit(1)
 
 # =============================================================================
 # DATA PROCESSING AND TRANSFORMATION
 # =============================================================================
 
-# Rename columns (remove spaces) for further processing...
-df.columns = df.columns.str.replace(' ', '_')
 
+# Drop unnnecessary columns
+to_keep = [
+    "Client ID", "School/ Daycare", "First Name", "Last Name", "Date of Birth", 
+    "Street Address", "City", "Province", "Postal Code", "PEAR.Imms Given"
+]
+
+df = df[to_keep]
+
+# Rename columns to match the expected columns in the yaml file
+col_mapping = {
+    "School/ Daycare": "School",
+    "Client ID": "Client_ID",
+    "First Name": "First_Name",
+    "Last Name": "Last_Name",
+    "Date of Birth": "Date_of_Birth",
+    "Street Address": "Street_Address",
+    "City": "City",
+    "Province": "Province",
+    "Postal Code": "Postal_Code",
+    "PEAR.Imms Given": "Received_Agents"
+}
+
+df.rename(columns=col_mapping, inplace=True)
+
+    
 # Take info out of config file
 ignore_agents = data['ignore_agents']
 delivery_date = data['delivery_date']
@@ -117,7 +130,6 @@ notices = defaultdict(lambda: {
     "date_of_birth": "",
     "age": "",
     "over_16": "",
-    "vaccines_due": "",
     "received": []
 })
 
@@ -126,17 +138,6 @@ structured_entries = []
 
 # Loop through the dataframe and process each row
 for index, row in df.iterrows():
-
-    # Replace vaccines due with common name found in disease map 
-    vaccines_due_updated = []
-    for vaccine in row.Vaccines_Due.split(','):
-        vax_to_compare = vaccine.strip()
-        mapped = disease_map.get(vax_to_compare, vax_to_compare)
-        vaccines_due_updated.append(mapped)
-    
-    # Replace col based on mapped values 
-    # First convert it into a string
-    vaccines_due_str = ', '.join(str(e) for e in vaccines_due_updated)
 
     # Check if the client is over 16 years old
     over_16 = over_16_check(row.Date_of_Birth, delivery_date)
@@ -156,8 +157,7 @@ for index, row in df.iterrows():
     notices[client_id]["postal_code"] = row.Postal_Code
     notices[client_id]["province"] = row.Province
     notices[client_id]["over_16"] = over_16
-    notices[client_id]["age"] = calculate_age(row.Date_of_Birth, "Apr 8, 2025")
-    notices[client_id]["vaccines_due"] = vaccines_due_str.rstrip(", ")
+    notices[client_id]["age"] = calculate_age(row.Date_of_Birth, "Jun 12, 2025")
 
     matches = re.findall(r'\w{3} \d{1,2}, \d{4} - [^,]+', row.Received_Agents)
 
