@@ -42,7 +42,7 @@ echo "
 
 // Font formatting
 #set text(
-  font: \"Fira Sans\",
+  font: \"FreeSans\",
   size: 10pt
 )
 
@@ -75,27 +75,33 @@ echo "
 // Chart with client information
 
 #align(center)[
-#table(
-  columns: (0.5fr, 0.5fr),
-  inset: 10pt,
-  [#align(left)[
-    To Parent/Guardian of: \
-*#client.name* \
-\
+  #table(
+    columns: (0.5fr, 0.5fr),
+    inset: 10pt,
+    align(left)[
+      To Parent/Guardian of: \
+      *#client.name* \
+      #linebreak()
 
-Address: \
+      Address: \
+      #linebreak()
 
-*#client.address*  \
-*#client.city*  ]]
-, 
-  [#align(left)[
-    Client ID: #smallcaps[*#client_id*]\
-    \
-    Date of Birth: *#client.date_of_birth*\
-    \
-    Childcare Centre: #smallcaps[*#client.school*]
-  ]],
-)
+      #smallcaps[#client.address] \
+      #smallcaps[#client.city],
+      #smallcaps[#client.province], 
+      #smallcaps[#client.postal_code] \
+    ],
+    align(left)[
+      Client ID: #smallcaps[*#client_id*]\
+      #linebreak()
+
+      Date of Birth: *#client.date_of_birth*\
+      #linebreak()
+
+      Childcare Centre:
+      #smallcaps[*#client.school*]
+    ]
+  )
 ]
 
 
@@ -166,7 +172,7 @@ Associate Medical Officer of Health
 
   let empty_rows_content = ()
   for _ in range(6) {
-  table_rows.push(("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""))
+  table_rows.push((\"\", \"\", \"\", \"\", \"\", \"\", \"\", \"\", \"\", \"\", \"\", \"\", \"\", \"\", \"\", \"\"))
   }
 
   let dynamic_headers = ()
@@ -227,7 +233,7 @@ Associate Medical Officer of Health
     // Populate disease columns with #vax or empty
     for disease_name in diseases {
 
-      let cell_content = ""
+      let cell_content = \"\"
       for record_disease in record.diseases {
         if record_disease == disease_name { 
           cell_content = vax
@@ -240,7 +246,7 @@ Associate Medical Officer of Health
 
     // Add the Vaccine(s) column content
     let vaccine_content = if type(record.vaccine) == array {
-      record.vaccine.join(", ") 
+      record.vaccine.join(\", \") 
     } else {
       record.vaccine
     }
@@ -331,7 +337,7 @@ Associate Medical Officer of Health
     pagebreak(weak: true)
     counter(page).update(1) // Reset page counter for this section
     pagebreak(weak: true)
-    immunization_notice(data, value, vaccines_due_array)
+    immunization_notice(data, value) //, vaccines_due_array)
     pagebreak()
     vaccine_table(value)
     if received.len() == 0 {
