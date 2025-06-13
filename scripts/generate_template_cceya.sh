@@ -4,6 +4,7 @@ INDIR=${1}
 FILENAME=${2}
 LOGO=${3}
 SIGNATURE=${4}
+PARAMETERS=${5}
 
 CLIENTIDFILE=${FILENAME}_client_ids.csv
 JSONFILE=${FILENAME}.json
@@ -47,10 +48,10 @@ echo "
     contents.chart_diseases_header
 }
   
-#let diseases = diseases_yaml(yaml(\"parameters.yaml\"))
+#let diseases = diseases_yaml(yaml(\"${PARAMETERS}\"))
 
 // Immunization Notice Section
-#let immunization_notice(client, client_id, immunizations_due) = block[
+#let immunization_notice(client, client_id) = block[
 
 
 #v(0.5cm)
@@ -60,7 +61,7 @@ echo "
   
   columns: (50%,50%), 
   gutter: 5%, 
-  [#image(\"logo.svg\", width: 8.5cm)],
+  [#image(\"${LOGO}\", width: 8.5cm)],
   [#set align(center + bottom)
     #text(size: 22pt, fill: darkblue)[*Request for immunization record*]]
   
@@ -71,33 +72,40 @@ echo "
 // Chart with client information
 
 #align(center)[
-#table(
-  columns: (0.5fr, 0.5fr),
-  inset: 10pt,
-  [#align(left)[
-    To Parent/Guardian of: \
-*#client.name* \
-\
+  #table(
+    columns: (0.5fr, 0.5fr),
+    inset: 10pt,
+    align(left)[
+      To Parent/Guardian of: \
+      *#client.name* \
+      #linebreak()
 
-Address: \
+      Address: \
+      #linebreak()
 
-*#client.address*  \
-*#client.city*  ]]
-, 
-  [#align(left)[
-    Client ID: #smallcaps[*#client_id*]\
-    \
-    Date of Birth: *#client.date_of_birth*\
-    \
-    Childcare Centre: #smallcaps[*#client.school*]
-  ]],
-)
+      #smallcaps[#client.address] \
+      #smallcaps[#client.city],
+      #smallcaps[#client.province], 
+      #smallcaps[#client.postal_code] \
+    ],
+    align(left)[
+      Client ID: #smallcaps[*#client_id*]\
+      #linebreak()
+
+      Date of Birth: *#client.date_of_birth*\
+      #linebreak()
+
+      Childcare Centre:
+      #smallcaps[*#client.school*]
+    ]
+  )
+
 ]
 
 #v(0.5cm)
 
 // Notice for immunizations
-Wellington-Dufferin-Guelph (WDG) Public Health does not have up-to-date vaccination records for your child. Please review the Immunization Record on page 2 and update your child's record by using one of the following options:
+As of ${DATE}, Wellington-Dufferin-Guelph (WDG) Public Health does not have up-to-date vaccination records for #smallcaps[#client.name]. Please review the Immunization Record on page 2 and update your child's record by using one of the following options:
 
 #v(0.25cm)
 
@@ -121,16 +129,16 @@ If you have any questions about your child’s vaccines, please call 1-800-265-7
 
 Sincerely,
 
-#image(\"20250611_MatthewTenebaum_Signature.jpg\", width: 4cm)
+#image(\"${SIGNATURE}\", width: 4cm)
 
 Matthew Tenenbaum, MD, CCFP, MPH, FRCPC
 
 Associate Medical Officer of Health
 
 #set align(center + bottom)
-#text(size: 12pt, fill: darkblue)[*Every time your child gets a vaccine, please update their immunization record with Public Health. For more information visit* #text(fill:linkcolor)[*#link(\"www.immunizewdg.ca\")*]]
+#text(size: 12pt, fill: darkblue)[*Every time your child gets a vaccine, please update their immunization record with Public Health. For more information visit* #text(fill:linkcolor)[*#link(\"www.immunizewdg.ca\")*]
 
-]
+]]
 
 #let vaccine_table(client_id) = block[
 
@@ -143,7 +151,7 @@ Associate Medical Officer of Health
   
   columns: (50%,50%), 
   gutter: 5%, 
-  [#image(\"logo.svg\", width: 6cm)],
+  [#image(\"${LOGO}\", width: 6cm)],
   [#set align(center + bottom)
     #text(size: 20.5pt, fill: black)[*Immunization Record*]]
   
@@ -196,7 +204,7 @@ Associate Medical Officer of Health
 
 
 // Read in data from client_ids 
-#let client_ids = csv(\"client_ids.csv\", delimiter: \",\", row-type: array)
+#let client_ids = csv(\"${CLIENTIDFILE}\", delimiter: \",\", row-type: array)
 
 
 #for row in client_ids {
@@ -222,20 +230,20 @@ Associate Medical Officer of Health
   footer: align(center, page-numbers))
 
   let value = row.at(0) // Access the first (and only) element of the row
-  let data = json(\"client_data.json\").at(value)
+  let data = json(\"${JSONFILE}\").at(value)
   let received = data.received
 
   // get vaccines due, split string into an array of sub strings
-  let vaccines_due = data.vaccines_due
+  //let vaccines_due = data.vaccines_due
 
-  let vaccines_due_array = vaccines_due.split(\", \")
+  //let vaccines_due_array = vaccines_due.split(\", \")
 
   let section(it) = {
     [#metadata(none)#reset]
     pagebreak(weak: true)
     counter(page).update(1) // Reset page counter for this section
     pagebreak(weak: true)
-    immunization_notice(data, value, vaccines_due_array)
+    immunization_notice(data, value) //, vaccines_due_array)
     pagebreak()
     vaccine_table(value)
   }
@@ -244,4 +252,4 @@ Associate Medical Officer of Health
 
 }
 
-"
+" > "${OUTFILE}"
