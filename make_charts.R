@@ -140,7 +140,8 @@ vaccine_occurrences = character(0)
 clients = clients |>
   select(
     `Client ID`,
-    `School` = `School/ Daycare ID`,
+    `Ontario Immunization ID`,
+    `School` = `School/ Daycare`,
     `First Name`,
     `Last Name`,
     `Street Address`,
@@ -306,9 +307,19 @@ render_batch = function(batch_data, lang = "EN") {
     "_", notice_data$batch[1],
     ".pdf"
   )
+
+  temp_folder = paste0(
+    output_folder, "/",
+    "temp_",
+    lang, "_",
+    stringr::str_replace_all(notice_data$School[1], "\\W+", "_"),
+    "_", notice_data$batch[1])
   
   cat("Rendering:", notice_filename, "with", nrow(notice_data), "students\n")
   
+  # Create output folder
+  dir.create(path = temp_folder)
+
   rmarkdown::render(
     input = if (lang == "EN") "chart_template_english.Rmd" else "chart_template_french.Rmd",
     output_file = notice_filename,
@@ -323,8 +334,12 @@ render_batch = function(batch_data, lang = "EN") {
       chart_num_diseases = chart_num_diseases,
       chart_col_header = if (lang == "FR") chart_col_header_french else chart_col_header_english
     ),
-    quiet = TRUE
+    quiet = TRUE,
+    runtime = "static",
+    envir = new.env(),
+    intermediates_dir = temp_folder,
   )
+  unlink(temp_folder, recursive=T, force=T)
 }
 
 # Batch clients for PDF generation
