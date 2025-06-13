@@ -173,7 +173,7 @@ do
     if [ -f "$jsonfile" ]; then
         filename=$(basename "$jsonfile" .json)
         echo "Generating template for $filename"
-        ./generate_template_cceya.sh ${OUTDIR}/english_json "$filename" "../../config/parameters.yaml" "../../templates/assets/logo.svg"
+        ./generate_template_cceya.sh ${OUTDIR}/english_json "$filename" "../../templates/assets/logo.svg" "../../templates/assets/20250611_MatthewTenenbaum_Signature.jpg" "../../config/parameters.yaml"
     else
         echo "No JSON files found in ${OUTDIR}/english_json."
     fi
@@ -183,26 +183,36 @@ END_TEMPLATE_GENERATION=$(date +%s)
 DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_GENERATION ))
 echo "Template generation complete for English data. Total time taken: $DIFF seconds"
 
-# START_TEMPLATE_COMPILATION=$(date +%s)
+START_TEMPLATE_COMPILATION=$(date +%s)
 
-# typst compile --font-path ../templates/assets/ --root ../ ../output/english_json/English_Maple_Syrup_High_01_immunization_notice.typ
+for typfile in ${OUTDIR}/english_json/*.typ
+do
+    if [ -f "$typfile" ]; then
+        filename=$(basename "$typfile" .typ)
+        echo "Compiling template for $filename"
+        typst compile --font-path ./usr/share/fonts/truetype/freefont/ --root ../ ../output/english_json/"$filename".typ
+    else
+        echo "No Typst files found in ${OUTDIR}/english_json."
+    fi
+done
 
-# END_TEMPLATE_GENERATION=$(date +%s)
-# DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_COMPILATION ))
-# echo "Template compilation complete for English data. Total time taken: $DIFF seconds"
 
-# echo ""
-# echo ""
-# echo "Clean-up files"
-# echo ""
-# echo "" 
+END_TEMPLATE_GENERATION=$(date +%s)
+DIFF=$(( $END_TEMPLATE_GENERATION - $START_TEMPLATE_COMPILATION ))
+echo "Template compilation complete for English data. Total time taken: $DIFF seconds"
 
-# rm -r ${OUTDIR}/by_language/
-# rm -r ${OUTDIR}/by_school/
-# rm -r ${OUTDIR}/batched/
-# rm -r ${OUTDIR}/english_json/*.typ
-# # rm -r ${OUTDIR}/french_json/*.typ
-# rm -r ${OUTDIR}/english_json/*.json
-# # rm -r ${OUTDIR}/french_json/*.json
-# rm -r ${OUTDIR}/english_json/*.csv
-# # rm -r ${OUTDIR}/french_json/*.csv
+echo ""
+echo ""
+echo "Clean-up files"
+echo ""
+echo "" 
+
+rm -r ${OUTDIR}/by_language/
+rm -r ${OUTDIR}/by_school/
+rm -r ${OUTDIR}/batched/
+rm -r ${OUTDIR}/english_json/*.typ
+# rm -r ${OUTDIR}/french_json/*.typ
+rm -r ${OUTDIR}/english_json/*.json
+# rm -r ${OUTDIR}/french_json/*.json
+rm -r ${OUTDIR}/english_json/*.csv
+# rm -r ${OUTDIR}/french_json/*.csv

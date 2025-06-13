@@ -96,7 +96,7 @@ outdir = sys.argv[5]
 # Drop unnnecessary columns
 to_keep = [
     "Client ID", "School/ Daycare", "First Name", "Last Name", "Date of Birth", 
-    "Street Address", "City", "Province", "Postal Code", "PEAR.Imms Given"
+    "Street Address", "City", "Province", "Postal Code", "PEAR.Imms Given", "Ontario Immunization ID"
 ]
 
 df = df[to_keep]
@@ -104,6 +104,7 @@ df = df[to_keep]
 # Rename columns to match the expected columns in the yaml file
 col_mapping = {
     "School/ Daycare": "School",
+    "Ontario Immunization ID": "Ontario_ID",  
     "Client ID": "Client_ID",
     "First Name": "First_Name",
     "Last Name": "Last_Name",
@@ -152,6 +153,7 @@ for index, row in df.iterrows():
     notices[client_id]["name"] = row.First_Name + " " + row.Last_Name
     notices[client_id]["school"] = row.School
     notices[client_id]["date_of_birth"] = convert_date_string(row.Date_of_Birth)
+    notices[client_id]["ontario_immunization_id"] = row.Ontario_ID
     notices[client_id]["address"] = row.Street_Address
     notices[client_id]["city"] = row.City
     notices[client_id]["postal_code"] = row.Postal_Code

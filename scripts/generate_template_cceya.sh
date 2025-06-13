@@ -86,13 +86,15 @@ echo "
       Address: \
       #linebreak()
 
-      #smallcaps[#client.address] \
-      #smallcaps[#client.city],
-      #smallcaps[#client.province], 
-      #smallcaps[#client.postal_code] \
+      #smallcaps[*#client.address*] \
+      #smallcaps[*#client.city*],
+      #smallcaps[*#client.province*], \
+      #smallcaps[*#client.postal_code*] \
     ],
     align(left)[
       Client ID: #smallcaps[*#client_id*]\
+      #linebreak()
+      Ontario Immunization ID: *#client.ontario_immunization_id*\
       #linebreak()
 
       Date of Birth: *#client.date_of_birth*\
