@@ -3,7 +3,7 @@ import sys
 
 # Load in file
 if len(sys.argv) != 4:
-    print("Usage: python separate_by_col.py <file_path>")
+    print("Usage: python separate_by_col.py <file_path> <column_name> <output_path>")
     sys.exit(1)
 
 file_path = sys.argv[1]
@@ -14,10 +14,13 @@ out_path = sys.argv[3]
 data = pd.read_csv(file_path, sep=';')  # Use pd.read_excel() for Excel files
 
 # Group data by daycare/school column
-grouped = data.groupby(col_name)  # Replace 'Daycare/School' with the actual column name
+grouped = data.groupby(col_name)
 
 # Save each group to a separate file
 for name, group in grouped:
-    output_file = f"{out_path}/{name}.csv"  # Save as CSV; change to .xlsx for Excel
+    # Remove spaces and other invalid characters from the file name
+    safe_name = str(name).replace(" ", "_").replace("/", "_")
+    output_file = f"{out_path}/{safe_name}.csv"  # Save as CSV
+    
     group.to_csv(output_file, index=False)
     print(f"Saved {output_file}")
