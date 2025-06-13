@@ -160,7 +160,60 @@ Associate Medical Officer of Health
   
 ]
 
-#let immunization-table(data, diseases) = {
+#let immunization-table-padded(diseases) = {
+
+  let table_rows = ()
+
+  let empty_rows_content = ()
+  for _ in range(6) {
+  table_rows.push(("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""))
+  }
+
+  let dynamic_headers = ()
+  dynamic_headers.push([#align(bottom + left)[#text(size: 10pt)[Date Given]]])
+  dynamic_headers.push([#align(bottom + left)[#text(size: 10pt)[At Age]]])
+
+  for disease in diseases {
+    dynamic_headers.push([#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[#disease]]]])
+  }
+
+  dynamic_headers.push([#align(bottom + left)[#text(size: 10pt)[Vaccine(s)]]])
+  
+  // --- Create the table ---
+  align(center)[
+    #table(
+        columns: (57pt, 46pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 190pt),
+        table.header(
+          ..dynamic_headers
+        ),
+      stroke: 1pt,
+      inset: 5pt,
+      align: (
+        left,
+        left,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        left
+      ), 
+      ..table_rows.flatten(), 
+    )
+  ]
+  
+  
+}
+
+#let immunization-table-dynamic(data, diseases) = {
 
   // Prepare table rows ---
   let table_rows = ()
@@ -174,7 +227,7 @@ Associate Medical Officer of Health
     // Populate disease columns with #vax or empty
     for disease_name in diseases {
 
-      let cell_content = \"\"
+      let cell_content = ""
       for record_disease in record.diseases {
         if record_disease == disease_name { 
           cell_content = vax
@@ -187,7 +240,7 @@ Associate Medical Officer of Health
 
     // Add the Vaccine(s) column content
     let vaccine_content = if type(record.vaccine) == array {
-      record.vaccine.join(\", \") 
+      record.vaccine.join(", ") 
     } else {
       record.vaccine
     }
@@ -278,10 +331,14 @@ Associate Medical Officer of Health
     pagebreak(weak: true)
     counter(page).update(1) // Reset page counter for this section
     pagebreak(weak: true)
-    immunization_notice(data, value) //, vaccines_due_array)
+    immunization_notice(data, value, vaccines_due_array)
     pagebreak()
     vaccine_table(value)
-    immunization-table(received, diseases)
+    if received.len() == 0 {
+      immunization-table-padded(diseases)
+    } else {
+      immunization-table-dynamic(received, diseases) 
+    }
   }
 
   section([] + page-numbers)
