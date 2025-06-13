@@ -37,6 +37,9 @@ echo "
 // Formatting links 
 #show link: underline
 
+// Custom shortcuts
+#let vax = (\"⬤\")
+
 // Font formatting
 #set text(
   font: \"Fira Sans\",
@@ -48,7 +51,7 @@ echo "
     contents.chart_diseases_header
 }
   
-#let diseases = diseases_yaml(yaml(\"${PARAMETERS}\"))
+#let diseases = diseases_yaml(yaml(\"parameters.yaml\"))
 
 // Immunization Notice Section
 #let immunization_notice(client, client_id) = block[
@@ -72,40 +75,34 @@ echo "
 // Chart with client information
 
 #align(center)[
-  #table(
-    columns: (0.5fr, 0.5fr),
-    inset: 10pt,
-    align(left)[
-      To Parent/Guardian of: \
-      *#client.name* \
-      #linebreak()
+#table(
+  columns: (0.5fr, 0.5fr),
+  inset: 10pt,
+  [#align(left)[
+    To Parent/Guardian of: \
+*#client.name* \
+\
 
-      Address: \
-      #linebreak()
+Address: \
 
-      #smallcaps[#client.address] \
-      #smallcaps[#client.city],
-      #smallcaps[#client.province], 
-      #smallcaps[#client.postal_code] \
-    ],
-    align(left)[
-      Client ID: #smallcaps[*#client_id*]\
-      #linebreak()
-
-      Date of Birth: *#client.date_of_birth*\
-      #linebreak()
-
-      Childcare Centre:
-      #smallcaps[*#client.school*]
-    ]
-  )
-
+*#client.address*  \
+*#client.city*  ]]
+, 
+  [#align(left)[
+    Client ID: #smallcaps[*#client_id*]\
+    \
+    Date of Birth: *#client.date_of_birth*\
+    \
+    Childcare Centre: #smallcaps[*#client.school*]
+  ]],
+)
 ]
+
 
 #v(0.5cm)
 
 // Notice for immunizations
-As of ${DATE}, Wellington-Dufferin-Guelph (WDG) Public Health does not have up-to-date vaccination records for #smallcaps[#client.name]. Please review the Immunization Record on page 2 and update your child's record by using one of the following options:
+Wellington-Dufferin-Guelph (WDG) Public Health does not have up-to-date vaccination records for your child. Please review the Immunization Record on page 2 and update your child's record by using one of the following options:
 
 #v(0.25cm)
 
@@ -136,9 +133,9 @@ Matthew Tenenbaum, MD, CCFP, MPH, FRCPC
 Associate Medical Officer of Health
 
 #set align(center + bottom)
-#text(size: 12pt, fill: darkblue)[*Every time your child gets a vaccine, please update their immunization record with Public Health. For more information visit* #text(fill:linkcolor)[*#link(\"www.immunizewdg.ca\")*]
+#text(size: 12pt, fill: darkblue)[*Every time your child gets a vaccine, please update their immunization record with Public Health. For more information visit* #text(fill:linkcolor)[*#link(\"www.immunizewdg.ca\")*]]
 
-]]
+]
 
 #let vaccine_table(client_id) = block[
 
@@ -160,52 +157,90 @@ Associate Medical Officer of Health
   #v(0.5cm)
 
   Below is a record of all immunizations received by the student on file with Public Health, excluding seasonal vaccinations against influenza and COVID-19. We appreciate your cooperation in ensuring this student immunization record is complete and accurate.
-
-  #align(center)[
-#table(
-  columns: (53pt, 42pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 180pt),
-  rows: (auto, 15pt),
-  table.header(
-    [#align(bottom + left)[#text(size: 10pt)[Date Given]]],
-    [#align(bottom + left)[#text(size: 10pt)[At Age]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Diptheria]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Tetanus]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Pertussis]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Polio]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Hib]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Pneumococcal]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Rotavirus]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Measles]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Mumps]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Rubella]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Meningococcal]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Vericella]]]],
-    [#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[Hepatitis B]]]],
-    [#align(bottom + left)[#text(size: 10pt)[Vaccine(s)]]],
-  ),
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-  [],[#align(left)[]],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[#align(left)[]],
-)]
   
 ]
 
+#let immunization-table(data, diseases) = {
 
-// Read in data from client_ids 
+  // Prepare table rows ---
+  let table_rows = ()
+  for record in data {
+    // Start row with Date Given and At Age
+    let row_cells = (
+      record.date_given,
+      record.age,
+    )
+
+    // Populate disease columns with #vax or empty
+    for disease_name in diseases {
+
+      let cell_content = \"\"
+      for record_disease in record.diseases {
+        if record_disease == disease_name { 
+          cell_content = vax
+          // Found a match, no need to check other diseases for this cell
+          break 
+        }
+      }
+      row_cells.push(cell_content)
+    }
+
+    // Add the Vaccine(s) column content
+    let vaccine_content = if type(record.vaccine) == array {
+      record.vaccine.join(\", \") 
+    } else {
+      record.vaccine
+    }
+    row_cells.push(vaccine_content)
+
+    table_rows.push(row_cells)
+  }
+
+  // Create dynamic headers based on the diseases
+  let dynamic_headers = ()
+
+  dynamic_headers.push([#align(bottom + left)[#text(size: 10pt)[Date Given]]])
+  dynamic_headers.push([#align(bottom + left)[#text(size: 10pt)[At Age]]])
+
+  for disease in diseases {
+    dynamic_headers.push([#align(bottom)[#text(size: 10pt)[#rotate(-90deg, reflow: true)[#disease]]]])
+  }
+
+  dynamic_headers.push([#align(bottom + left)[#text(size: 10pt)[Vaccine(s)]]])
+  
+  // --- Create the table ---
+  align(center)[
+    #table(
+        columns: (57pt, 46pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 15pt, 190pt),
+        table.header(
+          ..dynamic_headers
+        ),
+      stroke: 1pt,
+      inset: 5pt,
+      align: (
+        left,
+        left,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        center,
+        left
+      ), 
+      ..table_rows.flatten(), 
+    )
+  ]
+}
+
 #let client_ids = csv(\"${CLIENTIDFILE}\", delimiter: \",\", row-type: array)
-
 
 #for row in client_ids {
 
@@ -234,9 +269,9 @@ Associate Medical Officer of Health
   let received = data.received
 
   // get vaccines due, split string into an array of sub strings
-  //let vaccines_due = data.vaccines_due
+  // let vaccines_due = data.vaccines_due
 
-  //let vaccines_due_array = vaccines_due.split(\", \")
+  // let vaccines_due_array = vaccines_due.split(\", \")
 
   let section(it) = {
     [#metadata(none)#reset]
@@ -246,9 +281,14 @@ Associate Medical Officer of Health
     immunization_notice(data, value) //, vaccines_due_array)
     pagebreak()
     vaccine_table(value)
+    immunization-table(received, diseases)
   }
 
   section([] + page-numbers)
+
+}
+}
+
 
 }
 
