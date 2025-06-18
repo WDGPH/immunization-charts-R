@@ -1,6 +1,4 @@
 import pandas as pd
-import sys
-import csv
 
 def check_school_count(input_file, pdf_files):
     """
