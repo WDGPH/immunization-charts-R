@@ -59,10 +59,22 @@ The development of this framework is currently **in progress**
 
 Before generating the charts and letters, input data from Panorama is validated and cleaned. There are two major steps that this occurs in: 
 
-1. Data Quality Checks 
+1. Data Quality Checks:
+
+`GreatExpectations`, a python package, is used to generate data quality reports. 
+
+**Remainder to be added...**
 
 2. Preprocessing Steps: 
 
+* Column name mapping and dropping unneeded columns
+* Drop all duplicate values 
+* Normalize date fields, cases, and formats
+* Calculate fields: age, over_16
+* Check to see if calculated fields are as expected
+* Output: full csv file of cleaned data
+
+Details of data preprocessing steps are outlined below.
 
 ### Column Naming Mapping 
 
@@ -70,9 +82,34 @@ Different Panorama exports may use varying column names. This project includes a
 
 The steps for column naming mapping are found below: 
 
-1. All columns in the input file are collected and compared to a mapping file
+1. All columns in the input file are collected and compared to a mapping file found in `config/column_map.yaml`
 2. Any columns that do not have matches from our mapping file are logged for review.
 3. Columns are manually reviewed and added to the mapping file. 
+
+### Dropping Duplicate Rows
+
+Duplicate rows are identified using the client_id field. Rows with duplicate client ids are dropped **if** the remaining fields in the sheet are also duplicated. 
+
+If duplicate Client IDs are identified but the remaining fields are not consistent, these fields are flagged, removed from the master list, and retained in a log file for data quality reporting.
+
+### Normalize Date Fields, Cases, and Formats
+
+To ensure that all fields are consistent, each column is checked for consistent formatting. 
+
+### Calculate Required Fields 
+
+For report generation, we typically need two fields: 
+
+1. `age`
+2. `over_16`
+
+The `age` field is calculated using the `date_of_birth` field, which is provided by the Panorama export. 
+
+The `over_16` field is calculated using the `age` field. The resultant data type is a boolean. 
+
+### Checking Required Fields
+
+Once the required fields are generated, we have to check the output to ensure that it was generated as expected.
 
 ## Running the Pipeline
 
