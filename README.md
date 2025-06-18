@@ -2,49 +2,80 @@
 
 ## 📘 Introduction
 
-This project provides a Python and bash-based workflow for generating personalized immunization history charts and notice letters for children who are overdue for mandated vaccinations under the **Immunization of School Pupils Act (ISPA)** or the **Child Care and Early Years Act (CCEYA)**. 
+
+This project provides a Python and bash-based workflow for generating **personalized immunization history charts** and **notice letters** for children who are overdue for mandated vaccinations under:
+
+- **Immunization of School Pupils Act (ISPA)**
+- **Child Care and Early Years Act (CCEYA)**
+
 Reports are generated in PDF format using [Typst](https://typst.app) and a custom report template.
 
+Currently, Wellington-Dufferin Guelph Public Health is using this workflow. Future work involves expanding the workflow to other Public Health Units (PHU), allowing for the automatic generation of reports beyond a single PHU. 
 ---
 
-## ⚙️ Usage
+## ⚙️ Environment Set-Up
 
-### Environment 
-This project is written in **bash** and **Python**, and uses [Typst](https://typst.app) for typesetting. 
+This project is written in **bash** and **Python**, and uses [Typst](https://typst.app) for typesetting. All python dependencies are managed via a `pyproject.toml` and `uv`. 
 
-All dependencies are managed via a `pyproject.toml` file. 
+### Configuring the Virtual Environment 
 
-To start the virtual environment, follow the following steps: 
+To start the virtual environment:
 
-1. Create the virtual environment
+```bash
+uv venv
+```
 
-`uv venv`
+To activate the virtual environment: 
 
-2. Activate the virtual environment 
+```bash
+source .venv/bin/activate
+```
 
-`source .venv/bin/activate`
+## Input Data
 
-### Data
 This project is intended to be used with data extracts from [Panorama PEAR](https://accessonehealth.ca/).
 
-Input files, in `xlsx` format should be organized in a subfolder `input` (out of caution, input and output folders are `.gitignore`d, and need to be recreated by the user). Each `xlsx` file should be a single sheets. 
+* All input files should be placed in the `input/` subfolder. The input files are not tracked by Git. Should you clone or fork this repository, please ensure that the `input/` subfolder is tracked by your `.gitignore` file.
+* Files must be in `.xlsx` format with a **single worksheet** per file
 
-### Parameters 
-The `parameters.yaml` file is specific to each run. 
+## Parameters 
+The `parameters.yaml` file controls modifiable features of report generation. 
 
-The following can be modified based on the specifics of what should be included in the immunization reports: 
+The following can be modified: 
 
-* output_folder: name of the output folder which will be updated dynamically in the script
-* expected_columns: columns that ar eexpected in the input file
-* chart_diseases: vaccines or agents that should occur in the template for the chart
-* ignore_agents: vaccines or agents to ignore in/drop from immunization history
-* delivery_date: date at time of mail delivery. This is used to calculate the student age at the time of mail delivery. Letters for students under 16 should be addressed to their parent/guardian
-* data_date: to include in notice text as date that immunization history is reflective of
-* min_rows: minimum number of rows to show in immunization history chart
-* batch_size: number of clients to include in a single PDF
+| Parameter | Description |
+| --------- | ----------- |
+| output_folder | Name of the output folder which will be updated dynamically in the script | 
+| expected_columns | Columns that are expected in the input file |
+| chart_diseases | Vaccines or agents that should occur in the template for the chart | 
+| ignore_agents | Vaccines or agents to ignore in/drop from immunization history |
+| delivery_date | Date at time of mail delivery. This is used to calculate the student age at the time of mail delivery. Letters for students under 16 should be addressed to their parent/guardian |
+| data_date | To include in notice text as date that immunization history is reflective of |
+| min_rows | Minimum number of rows to show in immunization history chart |
+| batch_size | Number of clients to include in a single PDF |
 
-### Functionality 
-Functionality remains a work in progress but this is how things work so far...
+## Data Preprocessing Framework 
+
+The development of this framework is currently **in progress**
+
+Before generating the charts and letters, input data from Panorama is validated and cleaned. There are two major steps that this occurs in: 
+
+1. Data Quality Checks 
+
+2. Preprocessing Steps: 
+
+
+### Column Naming Mapping 
+
+Different Panorama exports may use varying column names. This project includes a column mapping system to ensure that the column names are consistently mapped and can be used downstream in our data pipeline. We expect to have variability in column naming conventions as this project is expanded to other Public Health Units in the province.
+
+The steps for column naming mapping are found below: 
+
+1. All columns in the input file are collected and compared to a mapping file
+2. Any columns that do not have matches from our mapping file are logged for review.
+3. Columns are manually reviewed and added to the mapping file. 
+
+## Running the Pipeline
 
 `run_data_pipeline.sh` runs the pipeline: 
 
