@@ -11,7 +11,6 @@ This project provides a Python and bash-based workflow for generating **personal
 Reports are generated in PDF format using [Typst](https://typst.app) and a custom report template.
 
 Currently, Wellington-Dufferin Guelph Public Health is using this workflow. Future work involves expanding the workflow to other Public Health Units (PHU), allowing for the automatic generation of reports beyond a single PHU. 
----
 
 ## ⚙️ Environment Set-Up
 
