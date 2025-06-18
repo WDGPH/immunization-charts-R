@@ -19,8 +19,7 @@ grouped = data.groupby(col_name)
 # Save each group to a separate file
 for name, group in grouped:
     # Remove spaces and other invalid characters from the file name
-    safe_name = str(name).replace(" ", "_").replace("/", "_")
+    safe_name = str(name).replace(" ", "_").replace("/", "_").replace("-","_")
     output_file = f"{out_path}/{safe_name}.csv"  # Save as CSV
     
     group.to_csv(output_file, index=False)
-    print(f"Saved {output_file}")
