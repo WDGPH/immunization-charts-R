@@ -13,3 +13,8 @@ dependencies = [
 dev = [
     "ipykernel>=6.29.5",
 ]
+
+[tool.uv.workspace]
+members = [
+    "scripts",
+]
