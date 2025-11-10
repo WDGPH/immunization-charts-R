@@ -1,3 +1,5 @@
+⚠️ **Note:** A newer version of this project is now available. This R version remains accessible for reference and legacy use, but users are encouraged to explore the updated release for the latest features and improvements.⚠️
+
 # Immunization Charts (R Version)
 
 ## Introduction
@@ -5,8 +7,6 @@
 This repository contains the **R implementation** of the immunization charts project.
 
 It provides an approach for generating custom immunization history charts, which can be incorporated into notice letters for overdue **Immunization of School Pupils Act (ISPA)**-mandated or **Child Care and Early Years Act (CCEYA)**-mandated immunizations.
-
-⚠️ **Note:** A newer version of this project is now available. This R version remains accessible for reference and legacy use, but users are encouraged to explore the updated release for the latest features and improvements.
 
 ## Usage
 ### Environment
